@@ -1,0 +1,4 @@
+target
+.flatcompose
+# Runtime overrides reach the container through `--env-file` at run time, never baked in.
+**/.env*

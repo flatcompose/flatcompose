@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:1
+
+# Test environment. The suite runs REAL `flatcompose` builds against the real
+# core-x86_64.flatimage and inspects the resulting artifacts and DwarFS layers,
+# so the image carries the Rust toolchain, FUSE, and the dwarfs userspace tools.
+#
+# The harness reads FLATCOMPOSE_RUNTIME at run time (provided via
+# docker/.env.tests) and caches the runtime it downloads once. Because every
+# build boots the FlatImage runtime (FUSE + unprivileged user namespaces), the
+# container must run privileged with /dev/fuse mounted. Same commands work in CI
+# and by hand:
+#
+#   docker build -f docker/Dockerfile.tests -t flatcompose-tests .
+#   docker run --rm --privileged --device /dev/fuse \
+#     --env-file docker/.env.tests flatcompose-tests
+FROM rust:bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      fuse3 libfuse2 ca-certificates curl \
+ && rm -rf /var/lib/apt/lists/*
+
+# DwarFS userspace as a single multicall binary, symlinked per applet, pinned to
+# the release whose libdwarfs matches the runtime's (reads the DwarFS 2.5 layers
+# the runtime writes). The `Dwarfs` harness entity dispatches to these.
+ARG DWARFS_VERSION=0.15.3
+RUN curl -fsSL -o /usr/local/bin/dwarfs-universal \
+      "https://github.com/mhx/dwarfs/releases/download/v${DWARFS_VERSION}/dwarfs-universal-${DWARFS_VERSION}-Linux-x86_64" \
+ && chmod +x /usr/local/bin/dwarfs-universal \
+ && for tool in dwarfs dwarfsck mkdwarfs; do ln -sf dwarfs-universal "/usr/local/bin/${tool}"; done
+
+# Precompiled nextest binary (version-agnostic; avoids tying the runner image's
+# rustc to nextest's latest MSRV).
+RUN curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C /usr/local/bin
+
+WORKDIR /workspace
+COPY . .
+
+# Compile the suite and the binary under test ahead of time, so `docker run` only
+# executes (and so a compile error fails the image build, not the test run).
+RUN cargo build --tests --locked
+
+CMD ["cargo", "nextest", "run", "--no-fail-fast"]

@@ -1,0 +1,57 @@
+# syntax=docker/dockerfile:1
+
+# Per-arch release build. A pre-built toolchain image receives the source and
+# `cargo build --release` runs for the target. The last step copies the
+# binary to /out/flatcompose-linux-<arch>.
+#
+# Musl targets link statically by default (no `+crt-static` needed).
+# Extract the binary with:
+#   docker create --name tmp flatcompose-build-release:<arch>
+#   docker cp tmp:/out/flatcompose-linux-<arch> ./dist/
+#   docker rm tmp
+#
+# Build args:
+#   ARCH: the short arch name (e.g. aarch64). Used to pick the
+#            toolchain image tag and to name the output binary.
+#   TARGET: the Rust target triple. Passed to `cargo build --target`.
+
+ARG ARCH
+FROM flatcompose-build-toolchain:${ARCH}
+
+ARG TARGET
+ARG ARCH
+
+COPY . /workspace
+WORKDIR /workspace
+
+# `+crt-static` forces static libc linkage even on targets whose Rust spec
+# sets `crt-static-default: false` (e.g. riscv64gc-unknown-linux-musl).
+# `relocation-model=static` suppresses PIE code generation so every target
+# produces a plain `statically linked` ELF (not `static-pie`). UPX compresses a
+# plain static binary reliably, and the linkage semantics stay identical:
+# no runtime overhead, same arch correctness.
+RUN RUSTFLAGS="-C target-feature=+crt-static -C relocation-model=static" \
+      cargo build --release --target ${TARGET}
+
+# Assert static linkage before publishing the artifact. Any runtime .so
+# dependency, or any libnss/libresolv reference (a sign that a glibc lookup
+# path leaked in), fails the build.
+RUN set -eu; \
+    bin="target/${TARGET}/release/flatcompose"; \
+    echo "--- readelf --file-header ---"; \
+    readelf --file-header "$bin" | grep -E "Class|Type|Machine"; \
+    NEEDED=$(readelf -d "$bin" 2>/dev/null | grep -c NEEDED || true); \
+    echo "--- NEEDED entries: ${NEEDED} ---"; \
+    if [ "$NEEDED" -ne 0 ]; then \
+      echo "FAIL: binary has ${NEEDED} runtime .so dependency"; \
+      readelf -d "$bin" | grep NEEDED; \
+      exit 1; \
+    fi; \
+    if strings "$bin" | grep -qE "libnss|libresolv"; then \
+      echo "FAIL: binary references NSS/resolv lookup libraries"; \
+      strings "$bin" | grep -E "libnss|libresolv"; \
+      exit 1; \
+    fi; \
+    echo "validation OK"
+
+RUN mkdir -p /out && cp target/${TARGET}/release/flatcompose /out/flatcompose-linux-${ARCH}

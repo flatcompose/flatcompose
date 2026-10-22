@@ -1,0 +1,16 @@
+[profile.default]
+# Cap to avoid fuse issues during testing
+test-threads = 4
+# Show every test outcome (pass/fail/skip), not just failures. The suite has
+# no #[ignore], so the line count doubles as a check that every test ran.
+status-level = "all"
+# Re-list slow tests at the bottom of the log instead of mid-stream.
+final-status-level = "slow"
+# Real builds download the runtime once and then drive FUSE mounts; warn past
+# 360 seconds for possible hangs
+slow-timeout = { period = "360s" }
+# Retry transient failures (runtime download, mirror blips) with backoff.
+# nextest reports a pass that needed a retry as FLAKY, so flakiness stays visible.
+retries = { backoff = "exponential", count = 3, delay = "5s", max-delay = "60s" }
+# Run every test even after a failure. Fail-fast would hide later failures.
+fail-fast = false

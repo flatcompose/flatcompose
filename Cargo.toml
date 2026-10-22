@@ -1,0 +1,24 @@
+[package]
+name = "flatcompose"
+version = "0.1.0"
+edition = "2024"
+authors = ["Ruan Formigoni <ruanformigoni@gmail.com>"]
+license = "Apache-2.0"
+description = "Declarative composition for FlatImages"
+repository = "https://github.com/flatcompose/flatcompose"
+
+[[bin]]
+name = "flatcompose"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+# Strip symbol tables so release artifacts stay small.
+strip = "symbols"
+# panic=abort eliminates the dependency on libgcc_s.so.1 (Rust's default
+# unwinder pulls in glibc/libgcc unwinding support). Combined with
+# +crt-static in the Dockerfile, the resulting binary needs no interpreter
+# and runs on any glibc or non-glibc host.
+panic = "abort"
