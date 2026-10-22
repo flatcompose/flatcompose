@@ -1,0 +1,73 @@
+site_name: FlatCompose
+site_dir: "site"
+
+# Single landing page. Add pages under docs/ and list them here as the docs grow.
+nav:
+  - Overview: index.md
+  - Specs:
+    - Compose: spec/compose.md
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path:
+        - docs
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - abbr
+
+theme:
+  name: material
+  palette:
+    scheme: default
+    primary: black
+  features:
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tooltips
+
+plugins:
+  - search
+  - tags
+  - mkdocs-material-footer-tags:
+      max_pages: 3
+      min_shared_tags: 1
+      heading: Related pages
+      heading_level: 2
+      show_summary: true
+      show_tags: true
+      show_breadcrumb: true
+      summary_max_chars: 180
+      summary_ellipsis: "..."
+  - macros
+  - mermaid2
+  - drawio
+  - panzoom:
+      key: "shift"
+      hint_location: "bottom"
+      always_show_hint: true
+      mermaid: true
+      full_screen: True
+      include_selectors:
+        - ".mermaid"
+        - ".drawio"
+      exclude_selectors:
+        - "img"
+
+repo_url: !ENV [FLATCOMPOSE_REPO_URL, "https://github.com/flatcompose/flatcompose"]

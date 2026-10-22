@@ -1,0 +1,23 @@
+services:
+  flatcompose-mkdocs-serve:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.mkdocs
+      args:
+        - FLATCOMPOSE_REPO_URL
+        - FLATCOMPOSE_RELEASE_URL
+    env_file: .env.mkdocs
+    working_dir: /flatcompose/docs/mkdocs
+    entrypoint:
+      - /flatcompose/docs/mkdocs/env/bin/mkdocs
+    command:
+      - serve
+      - --dev-addr=0.0.0.0:8756
+      - --config-file=/flatcompose/docs/mkdocs/mkdocs.yml
+      - --livereload
+    ports:
+      - "${MKDOCS_PORT:-8756}:8756"
+    volumes:
+      - ../docs/mkdocs/docs:/flatcompose/docs/mkdocs/docs
+      - ../docs/mkdocs/mkdocs.yml:/flatcompose/docs/mkdocs/mkdocs.yml
+      - ../docs/mkdocs/main.py:/flatcompose/docs/mkdocs/main.py
