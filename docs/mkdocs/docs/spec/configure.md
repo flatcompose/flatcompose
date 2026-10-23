@@ -107,7 +107,7 @@ fim-perms set home network
 
 ### Sandbox permissions
 
-**FR-PERMS-001**: `config.perms` names the host resources the sandbox grants the FlatImage. FlatCompose MUST write them as one `fim-perms set` command.
+**FR-PERMS-001**: `config.perms` names the host resources the sandbox grants the FlatImage. FlatCompose MUST write them as one `fim-perms set` command, in the order the file writes them.
 {: #fr-perms-001 }
 
 ```yaml
@@ -119,7 +119,7 @@ config:
 ```
 
 ```text
-fim-perms set home gpu network
+fim-perms set network home gpu
 ```
 
 ### Host driver capsules
@@ -210,7 +210,7 @@ config:
 ```
 
 ```text
-fim-env set EDITOR=vi LANG=C.UTF-8
+fim-env set LANG=C.UTF-8 EDITOR=vi
 ```
 
 ### Startup command
@@ -244,6 +244,7 @@ config:
       mode: rw
     - src: /etc/localtime
       dst: /etc/localtime
+      mode: ro
 ```
 
 ```text
