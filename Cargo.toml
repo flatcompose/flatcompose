@@ -11,6 +11,13 @@ repository = "https://github.com/flatcompose/flatcompose"
 name = "flatcompose"
 path = "src/main.rs"
 
+[dependencies]
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
+sha2 = "0.10"
+ureq = "2"
+
 [profile.release]
 opt-level = 3
 lto = "thin"
