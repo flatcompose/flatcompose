@@ -4,9 +4,9 @@
 # core-x86_64.flatimage and inspects the resulting artifacts and DwarFS layers,
 # so the image carries the Rust toolchain, FUSE, and the dwarfs userspace tools.
 #
-# The harness reads FLATCOMPOSE_RUNTIME at run time (provided via
-# docker/.env.tests) and caches the runtime it downloads once. Because every
-# build boots the FlatImage runtime (FUSE + unprivileged user namespaces), the
+# The harness reads FLATIMAGE at run time (provided via
+# docker/.env.tests) and caches the flatimage it downloads once. Because every
+# build executes flatimage (FUSE + unprivileged user namespaces), the
 # container must run privileged with /dev/fuse mounted. Same commands work in CI
 # and by hand:
 #
@@ -21,8 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 # DwarFS userspace as a single multicall binary, symlinked per applet, pinned to
-# the release whose libdwarfs matches the runtime's (reads the DwarFS 2.5 layers
-# the runtime writes). The `Dwarfs` harness entity dispatches to these.
+# the release whose libdwarfs matches flatimage's (reads the DwarFS 2.5 layers
+# flatimage writes). The `Dwarfs` harness entity dispatches to these.
 ARG DWARFS_VERSION=0.15.3
 RUN curl -fsSL -o /usr/local/bin/dwarfs-universal \
       "https://github.com/mhx/dwarfs/releases/download/v${DWARFS_VERSION}/dwarfs-universal-${DWARFS_VERSION}-Linux-x86_64" \
@@ -38,6 +38,6 @@ COPY . .
 
 # Compile the suite and the binary under test ahead of time, so `docker run` only
 # executes (and so a compile error fails the image build, not the test run).
-RUN cargo build --tests --locked
+RUN cargo build --tests
 
 CMD ["cargo", "nextest", "run", "--no-fail-fast"]

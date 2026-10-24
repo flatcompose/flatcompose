@@ -1,0 +1,6 @@
+{
+  "integrations": ["entry", "mimetype", "icon"],
+  "name": "MyApp",
+  "icon": "./icon.png",
+  "categories": ["System", "Network"]
+}

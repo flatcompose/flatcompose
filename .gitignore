@@ -1,4 +1,5 @@
 .env*
+!docker/.env.tests.example
 target
 
 # Vale's rule packages

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=MyApp
+Type=Application
+Comment=FlatImage distribution of "MyApp"
+Exec="app.flatimage" %F
+Icon=flatimage_MyApp
+MimeType=application/flatimage_MyApp;
+Categories=Network;System;
