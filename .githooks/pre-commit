@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+path_root=$(git rev-parse --show-toplevel)
+cd "$path_root"
+
+if path_stale=$(git status --porcelain | grep -E '^(MM|AM|RM) '); then
+  echo "pre-commit: these files changed after they were staged:" >&2
+  echo "$path_stale" >&2
+  echo "pre-commit: run 'git add' and commit again." >&2
+  exit 1
+fi
+
+if ! cargo fmt -- --check; then
+  echo "error: unformatted Rust code. Run 'cargo fmt' and try again." >&2
+  exit 1
+fi
+
+command -v vale >/dev/null 2>&1 || {
+  echo "pre-commit: vale not found in PATH" >&2
+  exit 1
+}
+
+vale sync
+vale --config="$path_root/.vale.ini" "$path_root/src" "$path_root/docs"

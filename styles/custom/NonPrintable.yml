@@ -1,0 +1,17 @@
+---
+extends: existence
+message: "Non-printable character '%s' detected. Replace arrow chains with a bulleted list so each step gets its own bullet and explanation; for other characters, reword or use an ASCII equivalent."
+level: error
+nonword: true
+tokens:
+  - '→'
+  - '←'
+  - '↑'
+  - '↓'
+  - '⇒'
+  - '⇐'
+  - '↔'
+  - '└'
+  - '├'
+  - '│'
+  - '─'
