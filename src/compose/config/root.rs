@@ -2,13 +2,13 @@
 
 use std::ffi::OsString;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `root` key, naming the root the FlatImage executes in.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Root {
   pub system: String,

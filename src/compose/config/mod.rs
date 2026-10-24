@@ -11,12 +11,12 @@ mod root;
 mod sandbox;
 mod unshare;
 
-pub use bind::Bind;
+pub use bind::{Bind, Binding, Mode};
 pub use boot::Boot;
 pub use capsule::Capsule;
 pub use config::Config;
 pub use desktop::Desktop;
-pub use env::Env;
+pub use env::{Env, Variable};
 pub use options::Options;
 pub use overlay::Overlay;
 pub use perms::Perms;

@@ -1,14 +1,14 @@
-//! Runtime options
+//! flatimage options
 
 use std::ffi::OsString;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
-/// The `options` key. Each entry gives one runtime toggle stored in the FlatImage.
-#[derive(Deserialize)]
+/// The `options` key. Each entry gives one flatimage toggle stored in the FlatImage.
+#[derive(Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct Options {
   pub entries: Vec<String>,

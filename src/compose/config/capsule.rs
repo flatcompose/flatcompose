@@ -2,13 +2,13 @@
 
 use std::ffi::OsString;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `capsule` key, naming the host driver stacks the container links into itself.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct Capsule {
   pub entries: Vec<String>,

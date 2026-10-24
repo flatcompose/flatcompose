@@ -2,13 +2,13 @@
 
 use std::ffi::OsString;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `sandbox` key, naming the mode the FlatImage executes in.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct Sandbox {
   pub mode: String,

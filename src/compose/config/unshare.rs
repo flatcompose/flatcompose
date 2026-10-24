@@ -2,13 +2,13 @@
 
 use std::ffi::OsString;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `unshare` key, naming the kernel namespaces the sandbox detaches.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct Unshare {
   pub entries: Vec<String>,

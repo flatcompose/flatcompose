@@ -2,13 +2,13 @@
 
 use std::ffi::OsString;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `overlay` key, naming the overlay backend.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct Overlay {
   pub backend: String,

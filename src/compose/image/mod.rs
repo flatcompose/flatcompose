@@ -1,3 +1,3 @@
 mod image;
 
-pub use image::{From, Image};
+pub use image::{Arch, From, Image};

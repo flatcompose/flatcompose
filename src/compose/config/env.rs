@@ -2,8 +2,9 @@
 
 use std::ffi::OsString;
 
-use serde::Deserialize;
 use serde::de::{Deserializer, Error as _};
+use serde::ser::{SerializeMap, Serializer};
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
@@ -37,6 +38,19 @@ impl<'de> Deserialize<'de> for Env {
   }
 }
 
+impl Serialize for Env {
+  /// Writes the mapping one entry per variable, in the order `entries` lists them.
+  fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+    let mut map = serializer.serialize_map(Some(self.entries.len()))?;
+
+    for variable in &self.entries {
+      map.serialize_entry(&variable.name, &variable.value)?;
+    }
+
+    map.end()
+  }
+}
+
 impl Lower for Env {
   /// Writes one `fim-env set`, one `NAME=VALUE` argument per variable.
   fn lower(&self) -> Vec<Command> {
@@ -57,6 +71,7 @@ impl Violation for Env {
 }
 
 /// One `NAME=VALUE` pair stored in the FlatImage.
+#[derive(Deserialize, Serialize)]
 pub struct Variable {
   pub name: String,
   pub value: String,

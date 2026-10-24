@@ -1,12 +1,8 @@
 //! The `flatcompose` process entry point.
 
-mod cli;
-mod compose;
-mod internal;
-mod lower;
-mod violation;
-
 use std::process::ExitCode;
+
+use flatcompose::cli;
 
 fn main() -> ExitCode {
   match run() {

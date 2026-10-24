@@ -2,20 +2,28 @@
 
 use std::path::PathBuf;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::violation::{Entry, Violation};
 
 /// The `image` block, with the four keys that set the build.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Image {
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub from: Option<From>,
   pub output: PathBuf,
-  #[serde(default)]
+  #[serde(default, skip_serializing_if = "Image::is_false")]
   pub inplace: bool,
-  #[serde(default)]
+  #[serde(default, skip_serializing_if = "Vec::is_empty")]
   pub arch: Vec<Arch>,
+}
+
+impl Image {
+  /// Whether `value` equals `false`
+  fn is_false(value: &bool) -> bool {
+    !*value
+  }
 }
 
 impl Violation for Image {
@@ -33,8 +41,8 @@ impl Violation for Image {
 }
 
 /// The file the build starts from, as a path beside the FlatCompose file or an `http(s)://` URL.
-#[derive(Deserialize)]
-#[serde(try_from = "String")]
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(try_from = "String", into = "String")]
 pub enum From {
   Local(PathBuf),
   Remote(String),
@@ -53,9 +61,19 @@ impl TryFrom<String> for From {
   }
 }
 
+impl std::convert::From<From> for String {
+  /// The token the file writes back: the path as it stands, or the URL.
+  fn from(value: From) -> String {
+    match value {
+      From::Local(path_file) => path_file.display().to_string(),
+      From::Remote(url) => url,
+    }
+  }
+}
+
 /// One architecture the image's install steps build for.
-#[derive(Deserialize)]
-#[serde(try_from = "String")]
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(try_from = "String", into = "String")]
 pub enum Arch {
   X86_64,
   I686,
@@ -75,6 +93,19 @@ impl TryFrom<String> for Arch {
       "armv7l" => Ok(Arch::Armv7l),
       "riscv64" => Ok(Arch::Riscv64),
       _ => Err(format!("names `{token}`, which is not one of x86_64, i686, aarch64, armv7l, riscv64")),
+    }
+  }
+}
+
+impl std::convert::From<Arch> for String {
+  /// The token the file writes back.
+  fn from(value: Arch) -> String {
+    match value {
+      Arch::X86_64 => "x86_64".to_string(),
+      Arch::I686 => "i686".to_string(),
+      Arch::AArch64 => "aarch64".to_string(),
+      Arch::Armv7l => "armv7l".to_string(),
+      Arch::Riscv64 => "riscv64".to_string(),
     }
   }
 }

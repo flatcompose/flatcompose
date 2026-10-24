@@ -1,26 +1,54 @@
 //! The `config` block
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::compose::config::{Bind, Boot, Capsule, Desktop, Env, Options, Overlay, Perms, Root, Sandbox, Unshare};
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `config` block, carrying the entities of the keys the file writes.
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Config {
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub root: Option<Root>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub perms: Option<Perms>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub options: Option<Options>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub unshare: Option<Unshare>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub capsule: Option<Capsule>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub overlay: Option<Overlay>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub sandbox: Option<Sandbox>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub env: Option<Env>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub boot: Option<Boot>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub bind: Option<Bind>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub desktop: Option<Desktop>,
+}
+
+impl Config {
+  /// Whether the block states no key, which a written file leaves out.
+  pub fn is_empty(&self) -> bool {
+    self.root.is_none()
+      && self.perms.is_none()
+      && self.options.is_none()
+      && self.unshare.is_none()
+      && self.capsule.is_none()
+      && self.overlay.is_none()
+      && self.sandbox.is_none()
+      && self.env.is_none()
+      && self.boot.is_none()
+      && self.bind.is_none()
+      && self.desktop.is_none()
+  }
 }
 
 impl Lower for Config {

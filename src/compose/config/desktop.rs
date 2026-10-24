@@ -3,19 +3,24 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `desktop` key, naming each asset and its integration items.
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Desktop {
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub manifest: Option<PathBuf>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub icon: Option<PathBuf>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub entry: Option<PathBuf>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub mimetype: Option<PathBuf>,
+  #[serde(skip_serializing_if = "Vec::is_empty")]
   pub integrations: Vec<String>,
 }
 

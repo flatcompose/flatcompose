@@ -3,17 +3,17 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `boot` key, naming the program and its arguments.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Boot {
   pub program: PathBuf,
-  #[serde(default)]
+  #[serde(default, skip_serializing_if = "Vec::is_empty")]
   pub args: Vec<String>,
 }
 

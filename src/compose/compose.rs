@@ -3,7 +3,7 @@
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result, bail};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::compose::config::Config;
 use crate::compose::image::{From, Image};
@@ -12,13 +12,13 @@ use crate::lower::Lower;
 use crate::violation::{Entry, Violation};
 
 /// One FlatCompose file
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Compose {
   #[serde(skip)]
   pub path_file_compose: PathBuf,
   pub image: Image,
-  #[serde(default)]
+  #[serde(default, skip_serializing_if = "Config::is_empty")]
   pub config: Config,
 }
 

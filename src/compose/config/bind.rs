@@ -3,13 +3,13 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
 /// The `bind` key, with one binding per list entry.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct Bind {
   pub entries: Vec<Binding>,
@@ -36,7 +36,7 @@ impl Violation for Bind {
 }
 
 /// One host path binding, with its source, destination and mode.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Binding {
   pub src: PathBuf,
@@ -45,7 +45,7 @@ pub struct Binding {
 }
 
 /// The mode one binding grants.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Mode {
   Ro,
