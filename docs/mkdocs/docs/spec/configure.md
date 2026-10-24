@@ -12,9 +12,9 @@ tags:
 | **Requires** | A FlatCompose file and its build, per [Compose](compose.md) |
 | **Actor** | A user describing one FlatImage application as a file |
 
-The `config` block configures the FlatImage: the permissions, namespaces, runtime options, overlay backend, sandbox mode, and so on. FlatCompose turns each key into the `fim-*` commands it states and runs them once the build's steps have run, so the FlatImage ends the build in the state the block declares.
+The `config` block configures the FlatImage: the permissions, namespaces, runtime options, overlay backend, sandbox mode, and so on. FlatCompose turns each key into the `fim-*` commands it states and runs them once the build's steps have run. The FlatImage then ends the build in the state the block declares.
 
-The schema carries every key, each with the command it writes:
+The schema lists every key with the command it writes:
 
 ```yaml
 config:
@@ -71,27 +71,27 @@ config:
 
 ## User Scenarios & Testing
 
-### User Story: shipping a configured image
+### User Story: a configured image
 
-A user writes their application's configuration into the FlatCompose file once, so the FlatImage ships with it.
+A user writes their application's configuration into the FlatCompose file once. Every later build keeps that configuration in the FlatImage.
 
 **Acceptance scenarios**:
 
-1. **Given** a FlatCompose file that carries a configuration, **When** the user builds the FlatImage, **Then** the FlatImage ships with that configuration.
-2. **Given** a user who changes an entry of the configuration in the FlatCompose file, **When** they build the FlatImage again, **Then** the FlatImage ships with the entry they now wrote.
-3. **Given** a user who built the FlatImage from a FlatCompose file and left the file unchanged, **When** they build it again, **Then** the FlatImage ships with the same configuration as the first build.
+1. **Given** a FlatCompose file that states a configuration, **When** the user builds the FlatImage, **Then** the built FlatImage shows that configuration.
+2. **Given** a user who changes an entry of the configuration in the FlatCompose file, **When** they build the FlatImage again, **Then** the built FlatImage shows the entry they now wrote.
+3. **Given** a user who built the FlatImage from a FlatCompose file and left the file unchanged, **When** they build it again, **Then** the built FlatImage shows the same configuration as the first build.
 
 ## Requirements
 
 ### The reserved-space configuration
 
-**FR-CONFIG-001**: The `config` block is the FlatImage's reserved-space configuration, and every key it carries MUST be one of the keys the [Compose schema](compose.md#schema) declares.
+**FR-CONFIG-001**: the `config` block declares the FlatImage's reserved-space configuration, and each key in it MUST come from the [Compose schema](compose.md#schema).
 {: #fr-config-001 }
 
-**FR-CONFIG-002**: FlatCompose MUST run the `fim-*` command of every key the file's `config` block carries, once the `steps` are finished.
+**FR-CONFIG-002**: FlatCompose MUST run the `fim-*` command of every key in the file's `config` block, once the `steps` finish.
 {: #fr-config-002 }
 
-**FR-CONFIG-003**: FlatCompose MUST pass every value of the `config` block through unchanged. Whether a value is valid is the runtime's decision.
+**FR-CONFIG-003**: FlatCompose MUST pass every value of the `config` block through unchanged. Whether a value passes validation stays the runtime's decision.
 {: #fr-config-003 }
 
 ```yaml
@@ -156,7 +156,7 @@ fim-unshare set pid net
 
 ### Runtime options
 
-**FR-OPTIONS-001**: `config.options` names the runtime toggles the FlatImage carries. FlatCompose MUST write them as one `fim-options set` command.
+**FR-OPTIONS-001**: `config.options` names the runtime toggles the FlatImage uses. FlatCompose MUST write them as one `fim-options set` command.
 {: #fr-options-001 }
 
 ```yaml
@@ -199,7 +199,7 @@ fim-sandbox set bwrap
 
 ### Environment variables
 
-**FR-ENV-001**: `config.env` names the environment variables the FlatImage carries, as a mapping of variable name to value. FlatCompose MUST write the mapping as one `fim-env set NAME=VALUE` command, one argument per variable, in the order they're defined on FlatCompose.
+**FR-ENV-001**: `config.env` names the environment variables the FlatImage sets, as a mapping of variable name to value. FlatCompose MUST write the mapping as one `fim-env set NAME=VALUE` command, one argument per variable, in the order the FlatCompose file defines them.
 {: #fr-env-001 }
 
 ```yaml
@@ -215,7 +215,7 @@ fim-env set LANG=C.UTF-8 EDITOR=vi
 
 ### Startup command
 
-**FR-BOOT-001**: `config.boot` names the startup command the FlatImage carries, as the required `program` and the optional `args` list. FlatCompose MUST write it as `fim-boot set <program> [args...]`, the program first and the arguments in the order the file writes them.
+**FR-BOOT-001**: `config.boot` names the startup command the FlatImage runs, as the required `program` and the optional `args` list. FlatCompose MUST write it as `fim-boot set <program> [args...]`, the program first and the arguments in the order the file writes them.
 {: #fr-boot-001 }
 
 ```yaml
@@ -233,7 +233,7 @@ fim-boot set /usr/bin/app --fullscreen --profile=main
 
 ### Host binds
 
-**FR-BIND-001**: `config.bind` names the path bindings, each one as `src`, `dst`, and `mode`, all required. FlatCompose MUST write each binding as one `src:dst:mode` argument of a single `fim-bind set` command.
+**FR-BIND-001**: `config.bind` names the path bindings, each one as `src`, `dst`, and `mode`, all required. FlatCompose MUST write each binding as one `src:dst:mode` argument of one `fim-bind set` command.
 {: #fr-bind-001 }
 
 ```yaml
@@ -253,18 +253,18 @@ fim-bind set /tmp:/host_tmp:rw /etc/localtime:/etc/localtime:ro
 
 ### Desktop integration
 
-**FR-DESKTOP-001**: `config.desktop` names the desktop assets the FlatImage ships, one field per asset:
+**FR-DESKTOP-001**: `config.desktop` names the desktop assets the FlatImage contains, one field per asset:
 {: #fr-desktop-001 }
 
-- `manifest` is the manifest JSON, which carries the application's name, its categories, and the items to integrate.
-- `icon` is the image drawn beside the application.
-- `entry` is a `.desktop` file.
-- `mimetype` is a MIME package file.
-- `integrations` are the integration items to enable.
+- `manifest` names the manifest JSON, which gives the application's name, its categories, and the items to integrate.
+- `icon` names the image drawn beside the application.
+- `entry` names a `.desktop` file.
+- `mimetype` names a MIME package file.
+- `integrations` name the integration items to enable.
 
 FlatCompose MUST write each of the four paths as `fim-desktop <field> set <path>`, and the `integrations` items as one `fim-desktop integrations set <item>...` command.
 
-Entries are paths to regular files, either full or relative to the working directory FlatCompose is called from.
+Entries name paths to regular files, either full or relative to the working directory FlatCompose runs from.
 
 ```yaml
 config:
@@ -320,7 +320,7 @@ fim-desktop integrations set entry icon
 
 ### The boot root
 
-**FR-ROOT-001**: The boot root is the root the FlatImage executes in, and `config.root.system` MUST name it. FlatCompose MUST write the name as `fim-root system use <root>`.
+**FR-ROOT-001**: the boot root sets the root the FlatImage executes in, and `config.root.system` MUST give that root's name. FlatCompose MUST write the name as `fim-root system use <root>`.
 {: #fr-root-001 }
 
 ```yaml
@@ -333,4 +333,5 @@ config:
 fim-root system use debian-bookworm
 ```
 
+<!-- vale ai-tells.DoubleHyphen = NO -->
 --8<-- "_glossary.md"

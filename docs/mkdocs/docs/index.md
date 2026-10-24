@@ -10,4 +10,4 @@ title: Overview
 
 ---
 
-This is the documentation landing page.
+The landing page for the FlatCompose documentation.

@@ -8,13 +8,13 @@ use serde::de::{Deserializer, Error as _};
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
-/// The `env` key, holding one variable per mapping pair.
+/// The `env` key, with one variable per mapping pair.
 pub struct Env {
   pub entries: Vec<Variable>,
 }
 
 impl<'de> Deserialize<'de> for Env {
-  /// Reads the mapping one entry per pair, keeping the order the file writes.
+  /// Reads the mapping one entry per pair, in the order the file writes.
   fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Env, D::Error> {
     let mapping = serde_yaml::Mapping::deserialize(deserializer)?;
     let mut entries = Vec::with_capacity(mapping.len());
@@ -56,7 +56,7 @@ impl Violation for Env {
   }
 }
 
-/// One `NAME=VALUE` pair the FlatImage carries.
+/// One `NAME=VALUE` pair stored in the FlatImage.
 pub struct Variable {
   pub name: String,
   pub value: String,

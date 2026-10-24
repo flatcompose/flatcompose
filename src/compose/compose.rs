@@ -23,7 +23,7 @@ pub struct Compose {
 }
 
 impl Compose {
-  /// Reads the file into the shape serde fills
+  /// Reads the file into the struct serde fills
   pub fn parse(path_file_compose: &Path) -> Result<Compose, serde_yaml::Error> {
     let text = std::fs::read_to_string(path_file_compose).map_err(|error| {
       <serde_yaml::Error as serde::de::Error>::custom(format!(

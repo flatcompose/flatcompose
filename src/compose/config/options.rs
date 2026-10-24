@@ -7,7 +7,7 @@ use serde::Deserialize;
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
-/// The `options` key, naming the runtime toggles the FlatImage carries.
+/// The `options` key. Each entry gives one runtime toggle stored in the FlatImage.
 #[derive(Deserialize)]
 #[serde(transparent)]
 pub struct Options {

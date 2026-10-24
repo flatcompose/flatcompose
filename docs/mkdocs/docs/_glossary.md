@@ -14,9 +14,12 @@
   surrounding.
 -->
 
+<!-- vale ai-tells.ColonUsage = NO -->
+<!-- Each line is an abbreviation definition, `*[term]: Definition`, whose colon opens a sentence rather than a clause, so the capital after it breaks no rule. -->
+
 <!-- A -->
 
-*[active root]: The root a launch resolves the image's `/` from, stored in the reserved space and written with `fim-root system use`. Empty means the merge root itself is `/`.
+*[active root]: The root a launch resolves the image's `/` from, stored in the reserved space and written with `fim-root system use`. With no value, the merge root itself becomes `/`.
 *[architecture]: A CPU family named as `uname -m` reports it: `x86_64`, `i686`, `aarch64`, `armv7l`, `riscv64`. `image.arch` lists the ones every install builds for.
 *[architectures]: CPU families named as `uname -m` reports them.
 *[artifact]: The FlatImage file a build publishes at `image.output`, with its `<output>.sha256sum` sidecar beside it.
@@ -42,20 +45,23 @@
 <!-- D -->
 
 *[desktop integration]: The application-menu presence `config.desktop` declares, applied with `fim-desktop`.
-*[DwarFS]: Deduplicating Warp-speed Advanced Read-only File System, the compressed read-only filesystem every FlatImage layer is made of.
+
+<!-- vale ai-tells.MotionMetaphors = NO -->
+<!-- `DwarFS` reads as the verb "dwarfs" to the motion rule, and the name recurs from this entry onward, so the exemption runs to the end of the file. -->
+*[DwarFS]: Deduplicating Warp-speed Advanced Read-only File System, the compressed read-only filesystem every FlatImage layer uses.
 
 <!-- E -->
 
-*[ephemeral]: Applied for one command and undone after it, never part of the artifact. Every step grant is ephemeral.
+*[ephemeral]: Applied for one command and undone after it, never part of the artifact. Every step grant remains ephemeral.
 *[exec step]: A step whose operation runs a shell script through `fim-exec`.
 *[exec steps]: Steps whose operation runs a shell script through `fim-exec`.
 
 <!-- F -->
 
 *[FlatCompose]: The declarative builder that reads a FlatCompose file and turns each key into exactly one `fim-*` command.
-*[FlatCompose file]: The single YAML document, passed with `-f`, that describes one FlatImage: its `image` block, its `layer` entries, its `steps`, and its `config`.
+*[FlatCompose file]: The YAML document, passed with `-f`, that describes one FlatImage: its `image` block, its `layer` entries, its `steps`, and its `config`.
 *[FlatCompose files]: The YAML documents that describe one FlatImage each.
-*[FlatImage]: The single-file Linux application FlatCompose builds: one executable holding the runtime, the appended layers, and the reserved space.
+*[FlatImage]: The single-file Linux application FlatCompose builds: one executable made of the runtime, the appended layers and the reserved space.
 *[FlatImages]: The single-file Linux applications FlatCompose builds.
 *[FlatRoot]: The rootfs builder FlatImage embeds as `fim-root builder`. An install step maps onto its grammar one to one.
 *[FUSE]: Filesystem in Userspace, the kernel interface FlatImage mounts its DwarFS layers through.
@@ -68,7 +74,7 @@
 *[inplace]: The `image.inplace` choice. `true` composes into the file already at `output`; `false`, the default, composes into a copy and overwrites `output`.
 *[install step]: A step whose operation installs packages into a root through `fim-root builder`.
 *[install steps]: Steps whose operation installs packages through `fim-root builder`.
-*[interpolation]: The pass that expands `$` forms in a FlatCompose file before it is read.
+*[interpolation]: The pass that expands `$` forms in a FlatCompose file before the build reads it.
 
 <!-- L -->
 
@@ -76,8 +82,8 @@
 *[layers]: Compressed DwarFS images appended to a FlatImage.
 *[layer entry]: One item of `layer`, keyed by the `fim-layer` noun that produces it: `stack`, `overlay`, or `mount`.
 *[layer entries]: The items of `layer`, each keyed by a `fim-layer` noun.
-*[layer file]: A `.layer` file on disk holding one DwarFS image, appended with `fim-layer stack add`.
-*[layer files]: `.layer` files on disk, each holding one DwarFS image.
+*[layer file]: A `.layer` file on disk with one DwarFS image, appended with `fim-layer stack add`.
+*[layer files]: `.layer` files on disk, each with one DwarFS image.
 *[layer ledger]: The image's own record of appended layers, one entry per frame with its hash, offset, size, kind, and destination.
 
 <!-- M -->
@@ -94,7 +100,7 @@
 
 <!-- P -->
 
-*[permissions]: The named host resources a launch may reach, such as `home`, `network`, and `gpu`, persisted by `config.perms`.
+*[permissions]: The host resources a launch receives, such as `home`, `network`, and `gpu`, persisted by `config.perms`.
 *[publish]: Writing the composed file to `image.output` and its digest to `<output>.sha256sum`.
 
 <!-- R -->
@@ -118,4 +124,6 @@
 
 <!-- W -->
 
-*[working file]: The file a build composes into before publishing. It is a copy of the source image, or the file at `output` itself when the build runs in place.
+*[working file]: The file a build composes into before publishing. It starts as a copy of the source image, or the file at `output` itself when the build runs in place.
+
+<!-- vale ai-tells.MotionMetaphors = YES -->

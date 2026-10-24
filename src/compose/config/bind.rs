@@ -8,7 +8,7 @@ use serde::Deserialize;
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
-/// The `bind` key, holding one binding per list entry.
+/// The `bind` key, with one binding per list entry.
 #[derive(Deserialize)]
 #[serde(transparent)]
 pub struct Bind {
@@ -54,7 +54,7 @@ pub enum Mode {
 }
 
 impl Mode {
-  /// The token the `src:dst:mode` argument carries.
+  /// The token that fills the mode slot of a `src:dst:mode` argument.
   pub fn token(&self) -> &'static str {
     match self {
       Mode::Ro => "ro",

@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 use crate::violation::{Entry, Violation};
 
-/// The `image` block, holding the four keys that shape the build.
+/// The `image` block, with the four keys that set the build.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Image {
