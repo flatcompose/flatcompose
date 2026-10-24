@@ -17,53 +17,61 @@ The `config` block configures the FlatImage: the permissions, namespaces, runtim
 The schema lists every key with the command it writes:
 
 ```yaml
+# [optional]
 config:
-  # fim-root system use debian-bookworm
+  # [optional] fim-root system use debian-bookworm
   root:
+    # [required]
     system: debian-bookworm
-  # fim-perms set home network gpu
+  # [optional] fim-perms set home network gpu
   perms:
     - home
     - network
     - gpu
-  # fim-options set casefold
+  # [optional] fim-options set casefold
   options:
     - casefold
-  # fim-unshare set pid net
+  # [optional] fim-unshare set pid net
   unshare:
     - pid
     - net
-  # fim-capsule set gpu audio
+  # [optional] fim-capsule set gpu audio
   capsule:
     - gpu
     - audio
-  # fim-overlay set overlayfs
+  # [optional] fim-overlay set overlayfs
   overlay: overlayfs
-  # fim-sandbox set bwrap
+  # [optional] fim-sandbox set bwrap
   sandbox: bwrap
-  # fim-env set LANG=C.UTF-8
+  # [optional] fim-env set LANG=C.UTF-8
   env:
     LANG: C.UTF-8
-  # fim-boot set /usr/bin/app --fullscreen
+  # [optional] fim-boot set /usr/bin/app --fullscreen
   boot:
+    # [required]
     program: /usr/bin/app
+    # [optional]
     args:
       - --fullscreen
-  # fim-bind set /tmp:/host_tmp:rw
+  # [optional] fim-bind set /tmp:/host_tmp:rw
   bind:
+    # [required]
     - src: /tmp
+      # [required]
       dst: /host_tmp
+      # [required]
       mode: rw
-  # fim-desktop manifest set manifest.json
-  # fim-desktop icon set icon.png
-  # fim-desktop entry set entry.desktop
-  # fim-desktop mimetype set mimetype.xml
-  # fim-desktop integrations set entry icon
+  # [optional]
   desktop:
+    # [optional] fim-desktop manifest set manifest.json
     manifest: manifest.json
+    # [optional] fim-desktop icon set icon.png
     icon: icon.png
+    # [optional] fim-desktop entry set entry.desktop
     entry: entry.desktop
+    # [optional] fim-desktop mimetype set mimetype.xml
     mimetype: mimetype.xml
+    # [optional] fim-desktop integrations set entry icon
     integrations:
       - entry
       - icon
