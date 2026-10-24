@@ -10,6 +10,7 @@ nav:
   - Plans:
     - Design: plans/design.md
     - Test suite and harness: plans/design-tests.md
+  - Tests: tests.md
 
 markdown_extensions:
   - pymdownx.superfences:

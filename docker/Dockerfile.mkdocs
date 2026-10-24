@@ -27,6 +27,9 @@ ARG FLATCOMPOSE_RELEASE_URL
 ENV FLATCOMPOSE_REPO_URL=$FLATCOMPOSE_REPO_URL
 ENV FLATCOMPOSE_RELEASE_URL=$FLATCOMPOSE_RELEASE_URL
 
+# The coverage ledger is authored in tests/
+RUN cp /flatcompose/tests/README.md /flatcompose/docs/mkdocs/docs/tests.md
+
 # One-shot build into docs/mkdocs/site
 RUN cd /flatcompose/docs/mkdocs && \
     /flatcompose/docs/mkdocs/env/bin/mkdocs build

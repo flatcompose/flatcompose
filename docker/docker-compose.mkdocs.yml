@@ -21,3 +21,4 @@ services:
       - ../docs/mkdocs/docs:/flatcompose/docs/mkdocs/docs
       - ../docs/mkdocs/mkdocs.yml:/flatcompose/docs/mkdocs/mkdocs.yml
       - ../docs/mkdocs/main.py:/flatcompose/docs/mkdocs/main.py
+      - ../tests/README.md:/flatcompose/docs/mkdocs/docs/tests.md:ro
