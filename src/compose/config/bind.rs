@@ -3,6 +3,7 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
@@ -17,7 +18,7 @@ pub struct Bind {
 
 impl Lower for Bind {
   /// Writes one `fim-bind set`, one `src:dst:mode` argument per binding.
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut argv: Vec<OsString> = vec!["fim-bind".into(), "set".into()];
 
     for binding in &self.entries {
@@ -25,7 +26,7 @@ impl Lower for Bind {
       argv.push(argument.into());
     }
 
-    vec![Command::new(argv)]
+    Ok(vec![Command::new(argv)])
   }
 }
 

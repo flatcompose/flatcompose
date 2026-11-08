@@ -3,6 +3,7 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
@@ -19,12 +20,12 @@ pub struct Boot {
 
 impl Lower for Boot {
   /// Writes one `fim-boot set`
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut argv: Vec<OsString> = vec!["fim-boot".into(), "set".into()];
     argv.push(self.program.clone().into_os_string());
     argv.extend(self.args.iter().map(OsString::from));
 
-    vec![Command::new(argv)]
+    Ok(vec![Command::new(argv)])
   }
 }
 

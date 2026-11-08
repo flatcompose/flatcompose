@@ -2,6 +2,7 @@
 
 use std::ffi::OsString;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
@@ -16,10 +17,10 @@ pub struct Sandbox {
 
 impl Lower for Sandbox {
   /// Writes `fim-sandbox set <mode>`.
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let argv: Vec<OsString> = vec!["fim-sandbox".into(), "set".into(), self.mode.clone().into()];
 
-    vec![Command::new(argv)]
+    Ok(vec![Command::new(argv)])
   }
 }
 

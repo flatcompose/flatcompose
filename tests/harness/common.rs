@@ -27,7 +27,7 @@ const NAME_FILE_BASE: &str = "core-x86_64.flatimage";
 
 static SERIAL: AtomicU32 = AtomicU32::new(0);
 
-/// A name no other test in this process holds.
+/// A name unique to one test in this process.
 fn unique(label: &str) -> String {
   let serial = SERIAL.fetch_add(1, Ordering::Relaxed);
   format!("{label}-{}-{serial}", std::process::id())
@@ -38,7 +38,7 @@ fn require_container() {
   assert!(Path::new("/.dockerenv").exists(), "the suite must run inside a container. See tests/AGENTS.md");
 }
 
-/// One test's work: the directory it owns and the FlatCompose file it builds.
+/// The directory one test works in and the FlatCompose file it builds.
 ///
 /// Every file the case creates stands inside that directory, and nothing the
 /// suite creates stands anywhere else.
@@ -49,10 +49,10 @@ pub struct Harness {
 
 impl Harness {
   /// The harness for one test, with the directory created and the FlatCompose
-  /// file holding `image.from` and `image.output` and nothing else.
+  /// file that states `image.from` and `image.output` and nothing else.
   ///
-  /// `image.from` comes from `FLATIMAGE`: a path is used as given,
-  /// a URL is fetched into the directory first, and a missing value fails the
+  /// `image.from` comes from `FLATIMAGE`. The harness takes a path as given
+  /// and fetches a URL into the directory first. A missing value fails the
   /// test instead of skipping it.
   pub fn new(label: &str) -> Harness {
     require_container();
@@ -82,7 +82,7 @@ impl Harness {
     &mut self.compose
   }
 
-  /// The directory holding `image.output`, which is the directory of one test.
+  /// The directory holding `image.output` and every file one test writes.
   pub fn path_dir_output(&self) -> &Path {
     &self.path_dir
   }
@@ -167,7 +167,7 @@ impl Drop for Harness {
   }
 }
 
-/// The base image inside `path_dir`, fetched there when the variable holds a URL.
+/// The base image inside `path_dir`, fetched there when `FLATIMAGE` states a URL.
 fn path_file_base(path_dir: &Path) -> PathBuf {
   let value = std::env::var("FLATIMAGE").expect("FLATIMAGE names the base image. See docker/.env.tests");
 
@@ -180,7 +180,7 @@ fn path_file_base(path_dir: &Path) -> PathBuf {
   path_file
 }
 
-/// One run of the binary: how it ended and what it printed.
+/// How one run of the binary ended, and what it printed.
 pub struct Outcome {
   pub stdout: String,
   pub stderr: String,
@@ -193,7 +193,7 @@ impl Outcome {
     self.code == Some(0)
   }
 
-  /// Exits zero with stdout and stderr empty, the success shape `FR-IMAGE-003` fixes.
+  /// Exits zero with stdout and stderr empty, as `FR-IMAGE-003` requires.
   pub fn silent(&self) -> bool {
     self.succeeded() && self.stdout.is_empty() && self.stderr.is_empty()
   }

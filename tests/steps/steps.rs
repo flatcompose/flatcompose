@@ -14,7 +14,7 @@ fn a_builder_step_builds_the_root_it_names() {
   let mut harness = Harness::new("steps-root");
   harness.compose().steps = Steps {
     entries: vec![Step {
-      builder: Builder {
+      builder: Some(Builder {
         from: "debian:bookworm".into(),
         arch: None,
         http_retries: None,
@@ -28,7 +28,8 @@ fn a_builder_step_builds_the_root_it_names() {
           parallel: None,
           no_deps: false,
         },
-      },
+      }),
+      exec: None,
     }],
   };
   harness.write();
@@ -75,7 +76,7 @@ fn a_builder_step_runs_a_command_against_the_flatimage() {
   let mut harness = Harness::new("steps-run");
   harness.compose().steps = Steps {
     entries: vec![Step {
-      builder: Builder {
+      builder: Some(Builder {
         from: "nosuchdistro:1".into(),
         arch: None,
         http_retries: None,
@@ -89,7 +90,8 @@ fn a_builder_step_runs_a_command_against_the_flatimage() {
           parallel: None,
           no_deps: false,
         },
-      },
+      }),
+      exec: None,
     }],
   };
   harness.write();

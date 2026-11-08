@@ -1,5 +1,6 @@
 //! The `config` block
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::compose::config::{Bind, Boot, Capsule, Desktop, Env, Options, Overlay, Perms, Root, Sandbox, Unshare};
@@ -52,54 +53,54 @@ impl Config {
 }
 
 impl Lower for Config {
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut commands = Vec::new();
 
     if let Some(perms) = &self.perms {
-      commands.extend(perms.lower());
+      commands.extend(perms.lower()?);
     }
 
     if let Some(capsule) = &self.capsule {
-      commands.extend(capsule.lower());
+      commands.extend(capsule.lower()?);
     }
 
     if let Some(unshare) = &self.unshare {
-      commands.extend(unshare.lower());
+      commands.extend(unshare.lower()?);
     }
 
     if let Some(options) = &self.options {
-      commands.extend(options.lower());
+      commands.extend(options.lower()?);
     }
 
     if let Some(overlay) = &self.overlay {
-      commands.extend(overlay.lower());
+      commands.extend(overlay.lower()?);
     }
 
     if let Some(sandbox) = &self.sandbox {
-      commands.extend(sandbox.lower());
+      commands.extend(sandbox.lower()?);
     }
 
     if let Some(env) = &self.env {
-      commands.extend(env.lower());
+      commands.extend(env.lower()?);
     }
 
     if let Some(boot) = &self.boot {
-      commands.extend(boot.lower());
+      commands.extend(boot.lower()?);
     }
 
     if let Some(bind) = &self.bind {
-      commands.extend(bind.lower());
+      commands.extend(bind.lower()?);
     }
 
     if let Some(desktop) = &self.desktop {
-      commands.extend(desktop.lower());
+      commands.extend(desktop.lower()?);
     }
 
     if let Some(root) = &self.root {
-      commands.extend(root.lower());
+      commands.extend(root.lower()?);
     }
 
-    commands
+    Ok(commands)
   }
 }
 

@@ -2,6 +2,7 @@
 
 use std::ffi::OsString;
 
+use anyhow::Result;
 use serde::de::{Deserializer, Error as _};
 use serde::ser::{SerializeMap, Serializer};
 use serde::{Deserialize, Serialize};
@@ -53,14 +54,14 @@ impl Serialize for Env {
 
 impl Lower for Env {
   /// Writes one `fim-env set`, one `NAME=VALUE` argument per variable.
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut argv: Vec<OsString> = vec!["fim-env".into(), "set".into()];
 
     for variable in &self.entries {
       argv.push(format!("{}={}", variable.name, variable.value).into());
     }
 
-    vec![Command::new(argv)]
+    Ok(vec![Command::new(argv)])
   }
 }
 

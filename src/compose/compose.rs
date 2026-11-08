@@ -45,11 +45,11 @@ impl Compose {
   pub fn build(&self) -> Result<()> {
     let path_file_image = self.prepare(self.path_dir_compose())?;
 
-    for command in self.steps.lower() {
+    for command in self.steps.lower()? {
       self.run(&path_file_image, &command)?;
     }
 
-    for command in self.config.lower() {
+    for command in self.config.lower()? {
       self.run(&path_file_image, &command)?;
     }
 

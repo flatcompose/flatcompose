@@ -1,6 +1,7 @@
 //! The `steps` block
 
 mod builder;
+mod exec;
 mod steps;
 
 #[path = "../harness/common.rs"]

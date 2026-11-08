@@ -63,7 +63,7 @@ fn a_builder_whose_install_names_no_pattern_is_refused() {
   let mut harness = Harness::new("steps-pattern-absent");
   harness.compose().steps = Steps {
     entries: vec![Step {
-      builder: Builder {
+      builder: Some(Builder {
         from: "debian:bookworm".into(),
         arch: None,
         http_retries: None,
@@ -77,7 +77,8 @@ fn a_builder_whose_install_names_no_pattern_is_refused() {
           parallel: None,
           no_deps: false,
         },
-      },
+      }),
+      exec: None,
     }],
   };
   harness.write();

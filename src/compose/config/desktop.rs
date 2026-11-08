@@ -3,6 +3,7 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
@@ -25,7 +26,7 @@ pub struct Desktop {
 }
 
 impl Lower for Desktop {
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut commands = Vec::new();
     let assets = [
       ("manifest", self.manifest.as_ref()),
@@ -56,7 +57,7 @@ impl Lower for Desktop {
       commands.push(Command::new(argv));
     }
 
-    commands
+    Ok(commands)
   }
 }
 

@@ -2,6 +2,7 @@
 
 use std::ffi::OsString;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::compose::image::Arch;
@@ -21,7 +22,7 @@ pub struct Builder {
 
 impl Lower for Builder {
   /// Writes one `fim-root builder`, with the builder options first and the install request last.
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut argv: Vec<OsString> = vec!["fim-root".into(), "builder".into()];
 
     argv.push("--from".into());
@@ -39,7 +40,7 @@ impl Lower for Builder {
 
     argv.extend(self.install.arguments());
 
-    vec![Command::new(argv)]
+    Ok(vec![Command::new(argv)])
   }
 }
 

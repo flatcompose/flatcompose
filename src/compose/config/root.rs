@@ -2,6 +2,7 @@
 
 use std::ffi::OsString;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
@@ -16,11 +17,11 @@ pub struct Root {
 
 impl Lower for Root {
   /// Writes `fim-root system use <root>`.
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut argv: Vec<OsString> = vec!["fim-root".into(), "system".into(), "use".into()];
     argv.push(self.system.clone().into());
 
-    vec![Command::new(argv)]
+    Ok(vec![Command::new(argv)])
   }
 }
 

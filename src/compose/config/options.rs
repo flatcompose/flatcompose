@@ -2,6 +2,7 @@
 
 use std::ffi::OsString;
 
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::lower::{Command, Lower};
@@ -16,11 +17,11 @@ pub struct Options {
 
 impl Lower for Options {
   /// Writes one `fim-options set`, one argument per name.
-  fn lower(&self) -> Vec<Command> {
+  fn lower(&self) -> Result<Vec<Command>> {
     let mut argv: Vec<OsString> = vec!["fim-options".into(), "set".into()];
     argv.extend(self.entries.iter().map(OsString::from));
 
-    vec![Command::new(argv)]
+    Ok(vec![Command::new(argv)])
   }
 }
 

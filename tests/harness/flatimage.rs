@@ -5,12 +5,12 @@ use std::process::{Command, Output};
 
 use anyhow::{Context, Result, ensure};
 
-/// A collection a container holds.
+/// A collection of items flatimage lists.
 pub trait Collection {
   /// One item of the collection.
   type Item;
 
-  /// The items the container holds, in the order flatimage listed them.
+  /// The items flatimage lists, in the order it listed them.
   fn items(self) -> Result<Vec<Self::Item>>;
 }
 
@@ -110,7 +110,7 @@ pub(super) fn read_bytes(command: &mut Command) -> Result<Vec<u8>> {
   Ok(output.stdout)
 }
 
-/// The `fim-root` command: the roots the container carries.
+/// The `fim-root` command: the roots the image contains.
 pub mod root {
   use std::path::Path;
   use std::process::Command;
@@ -132,7 +132,7 @@ pub mod root {
       Root { command }
     }
 
-    /// The `fim-root system` command: the roots the container carries.
+    /// The `fim-root system` command: the roots the image contains.
     pub fn system(self) -> system::System {
       system::System::of(self.command)
     }
@@ -147,7 +147,7 @@ pub mod root {
 
     use super::super::{Collection, execute};
 
-    /// One root the container carries: the name it is addressed by, and whether it is active.
+    /// The name of one root, and whether flatimage marks it active.
     #[derive(Deserialize)]
     pub struct Root {
       pub name: String,
@@ -170,7 +170,7 @@ pub mod root {
     impl Collection for System {
       type Item = Root;
 
-      /// The roots the container carries, in the order flatimage lists them.
+      /// The roots the image contains, in the order flatimage lists them.
       fn items(mut self) -> Result<Vec<Root>> {
         let output = execute(self.command.arg("list").arg("--format").arg("json"))?;
         ensure!(output.status.success(), "flatimage refused: {}", String::from_utf8_lossy(&output.stderr).trim());
@@ -371,7 +371,7 @@ pub mod bind {
       Bind { command }
     }
 
-    /// `fim-bind list`: every binding the image carries.
+    /// `fim-bind list`: every binding the image contains.
     pub fn list(mut self) -> Result<Vec<Binding>> {
       let value = read(self.command.arg("list"))?;
       Ok(serde_json::from_value(value)?)
@@ -449,7 +449,7 @@ pub mod boot {
 
   use super::read;
 
-  /// The command the image starts: its program and its arguments.
+  /// The program and arguments of the command the image starts.
   #[derive(Deserialize)]
   pub struct BootItem {
     pub program: String,
@@ -523,7 +523,7 @@ pub mod desktop {
       Ok(String::from_utf8(bytes)?)
     }
 
-    /// `fim-desktop icon show`: the image bytes the icon slot holds.
+    /// `fim-desktop icon show`: the image bytes stored in the icon slot.
     pub fn icon(mut self) -> Result<Vec<u8>> {
       read_bytes(self.command.arg("icon").arg("show"))
     }

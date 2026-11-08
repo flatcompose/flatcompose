@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 
 pub mod desktop;
 
-/// The directory holding the artifacts flatimage ships.
+/// The directory holding the artifacts flatimage provides.
 const DIR_ASSETS: &str = "tests/assets";
 
 /// Copies the artifact at `tests/assets/<path_file_asset>` into
