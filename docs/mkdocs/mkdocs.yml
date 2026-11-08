@@ -7,6 +7,7 @@ nav:
   - Specs:
     - Compose: spec/compose.md
     - Configure: spec/configure.md
+    - Steps: spec/steps.md
   - Plans:
     - Design: plans/design.md
     - Test suite and harness: plans/design-tests.md
