@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::compose::config::Config;
 use crate::compose::image::{From, Image};
+use crate::compose::steps::Steps;
 use crate::internal::{hash, http};
 use crate::lower::Lower;
 use crate::violation::{Entry, Violation};
@@ -18,6 +19,8 @@ pub struct Compose {
   #[serde(skip)]
   pub path_file_compose: PathBuf,
   pub image: Image,
+  #[serde(default, skip_serializing_if = "Steps::is_empty")]
+  pub steps: Steps,
   #[serde(default, skip_serializing_if = "Config::is_empty")]
   pub config: Config,
 }
@@ -41,6 +44,10 @@ impl Compose {
   /// Builds the published FlatImage
   pub fn build(&self) -> Result<()> {
     let path_file_image = self.prepare(self.path_dir_compose())?;
+
+    for command in self.steps.lower() {
+      self.run(&path_file_image, &command)?;
+    }
 
     for command in self.config.lower() {
       self.run(&path_file_image, &command)?;
@@ -130,6 +137,7 @@ impl Violation for Compose {
   /// Calls `violations()` on the yaml blocks and returns the violations
   fn violations(&self) -> Vec<Entry> {
     let mut entries = self.image.violations();
+    entries.extend(self.steps.violations());
     entries.extend(self.config.violations());
 
     entries

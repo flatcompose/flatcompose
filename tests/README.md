@@ -50,6 +50,7 @@ An integration test stands under `tests/`, runs the binary `cargo` builds for th
 | `FR-CONFIG-002` | One file whose `config` block states settings leaves a file reporting each of those settings. | `config.rs::every_key_of_the_config_block_reaches_the_output_file` |
 | `FR-CONFIG-003` | An environment value of `a=b c` reads back as `a=b c`. | `config.rs::a_value_carrying_spaces_and_equals_arrives_unchanged` |
 | `FR-CONFIG-003` | `perms: [nonsense]` exits non-zero, prints flatimage's refusal on stderr, and leaves no digest file. | `config.rs::a_value_the_flatimage_refuses_ends_the_build` |
+| `FR-CONFIG-002` | A failing step leaves the settings of the config block unapplied. | `steps/steps.rs::the_config_block_runs_only_after_the_steps_finish` |
 | `FR-PERMS-001` | The permissions the case wrote read back as those names. | `perms.rs::perms_reach_the_output_file` |
 | `FR-PERMS-001` | A shorter list reads back the same way. | `perms.rs::a_single_permission_reaches_the_output_file` |
 | `FR-CAPSULE-001` | The capsules the case wrote read back as those names. | `capsule.rs::capsule_reaches_the_output_file` |
@@ -78,6 +79,19 @@ An integration test stands under `tests/`, runs the binary `cargo` builds for th
 | `FR-DESKTOP-001` | Integration items stored beside the manifest read back as the items the case wrote. | `desktop.rs::integrations_reach_the_output_file` |
 | `FR-DESKTOP-001` | Every desktop field stated together answers on its own noun, and the run prints nothing. | `desktop.rs::every_desktop_field_reaches_the_output_file` |
 | `FR-DESKTOP-001` | An icon path that is not there exits non-zero before the digest step. | `desktop.rs::a_desktop_path_that_is_not_there_ends_the_build` |
+
+## Steps
+
+`steps.md` states the `steps` block and the `builder` command. The cases live in `tests/steps/`, one file per family: `steps.rs` for `FR-STEPS` and `builder.rs` for `FR-BUILDER`.
+
+| Rule | The claim one case checks | The case |
+|---|---|---|
+| `FR-STEPS-001` | A step stating `system` instead of `builder` exits non-zero naming `builder`, and leaves no digest file. | `steps/steps.rs::a_step_stating_a_command_other_than_builder_is_refused` |
+| `FR-STEPS-002` | A file whose steps block holds one builder step builds silently, and `fim-root system list` names the root the source names. | `steps/steps.rs::a_builder_step_builds_the_root_it_names` |
+| `FR-STEPS-002` | A step whose source the install cannot use runs a `fim-root` command, and the build ends when that command fails. | `steps/steps.rs::a_builder_step_runs_a_command_against_the_flatimage` |
+| `FR-BUILDER-002` | A step that omits `from` exits non-zero naming the field, and leaves no digest file. | `steps/builder.rs::a_step_that_names_no_source_is_refused` |
+| `FR-BUILDER-003` | A step that omits the install request exits non-zero naming the field, and leaves no digest file. | `steps/builder.rs::a_step_that_names_no_install_request_is_refused` |
+| `FR-BUILDER-006` | A builder whose patterns list is empty exits non-zero naming `steps[0].builder.install.patterns`, and leaves no digest file. | `steps/builder.rs::a_builder_whose_install_names_no_pattern_is_refused` |
 
 ## Reading a value back
 

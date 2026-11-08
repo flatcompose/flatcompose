@@ -9,6 +9,7 @@ use anyhow::{Context, Result};
 use flatcompose::compose::Compose;
 use flatcompose::compose::config::Config;
 use flatcompose::compose::image::{From, Image};
+use flatcompose::compose::steps::Steps;
 
 pub use crate::flatimage::FlatImage;
 
@@ -69,6 +70,7 @@ impl Harness {
         inplace: false,
         arch: Vec::new(),
       },
+      steps: Steps::default(),
       config: Config::default(),
     };
 

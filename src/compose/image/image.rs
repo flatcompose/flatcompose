@@ -97,15 +97,22 @@ impl TryFrom<String> for Arch {
   }
 }
 
+impl Arch {
+  /// The token the file writes back.
+  pub fn token(&self) -> &'static str {
+    match self {
+      Arch::X86_64 => "x86_64",
+      Arch::I686 => "i686",
+      Arch::AArch64 => "aarch64",
+      Arch::Armv7l => "armv7l",
+      Arch::Riscv64 => "riscv64",
+    }
+  }
+}
+
 impl std::convert::From<Arch> for String {
   /// The token the file writes back.
   fn from(value: Arch) -> String {
-    match value {
-      Arch::X86_64 => "x86_64".to_string(),
-      Arch::I686 => "i686".to_string(),
-      Arch::AArch64 => "aarch64".to_string(),
-      Arch::Armv7l => "armv7l".to_string(),
-      Arch::Riscv64 => "riscv64".to_string(),
-    }
+    value.token().to_string()
   }
 }
