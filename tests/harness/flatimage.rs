@@ -32,6 +32,32 @@ impl FlatImage {
     &self.path_file
   }
 
+  /// `fim-exec`: runs `argv` in the image's active root and answers what it printed.
+  pub fn exec(&self, argv: &[&str]) -> Result<String> {
+    self.exec_with(None, argv)
+  }
+
+  /// `fim-exec` with `FIM_LAYERS` naming `path_file_layer`, and the program's stdout.
+  pub fn exec_with_layer(&self, path_file_layer: &Path, argv: &[&str]) -> Result<String> {
+    self.exec_with(Some(path_file_layer), argv)
+  }
+
+  /// Runs `fim-exec` over `argv`, and sets `FIM_LAYERS` when the caller passes `path_file_layer`.
+  fn exec_with(&self, path_file_layer: Option<&Path>, argv: &[&str]) -> Result<String> {
+    let mut command = Command::new(&self.path_file);
+    command.arg("fim-exec");
+    command.args(argv);
+
+    if let Some(path_file_layer) = path_file_layer {
+      command.env("FIM_LAYERS", path_file_layer);
+    }
+
+    let output = execute(&mut command)?;
+    ensure!(output.status.success(), "flatimage refused: {}", String::from_utf8_lossy(&output.stderr).trim());
+
+    String::from_utf8(output.stdout).context("reading what fim-exec printed")
+  }
+
   /// The `fim-root` command.
   pub fn root(&self) -> root::Root {
     root::Root::of(&self.path_file)
@@ -85,6 +111,11 @@ impl FlatImage {
   /// The `fim-desktop` command.
   pub fn desktop(&self) -> desktop::Desktop {
     desktop::Desktop::of(&self.path_file)
+  }
+
+  /// The `fim-layer` command.
+  pub fn layer(&self) -> layer::Layer {
+    layer::Layer::of(&self.path_file)
   }
 }
 
@@ -526,6 +557,126 @@ pub mod desktop {
     /// `fim-desktop icon show`: the image bytes stored in the icon slot.
     pub fn icon(mut self) -> Result<Vec<u8>> {
       read_bytes(self.command.arg("icon").arg("show"))
+    }
+  }
+}
+
+/// The `fim-layer` command: the layers in the image and their mountpoints.
+pub mod layer {
+  use std::path::Path;
+  use std::process::Command;
+
+  use anyhow::Result;
+  use serde::Deserialize;
+
+  use super::{Collection, read};
+
+  /// One layer in the image.
+  #[derive(Debug, Deserialize)]
+  pub struct StackEntry {
+    pub index: u32,
+    pub hash: String,
+    pub offset: u64,
+    pub size: u64,
+    pub path: String,
+    pub kind: String,
+    pub dst: String,
+  }
+
+  /// One mountpoint the image records.
+  #[derive(Debug, Deserialize)]
+  pub struct MountEntry {
+    pub hash: String,
+    pub dst: String,
+  }
+
+  /// The `fim-layer` command.
+  pub struct Layer {
+    command: Command,
+  }
+
+  impl Layer {
+    /// The command, opening the invocation on flatimage at `path_file`.
+    pub(super) fn of(path_file: &Path) -> Layer {
+      let mut command = Command::new(path_file);
+      command.arg("fim-layer");
+      Layer { command }
+    }
+
+    /// The `stack` noun: the layers in the image.
+    pub fn stack(self) -> stack::Stack {
+      stack::Stack::of(self.command)
+    }
+
+    /// The `mount` noun: the mountpoints the image records.
+    pub fn mount(self) -> mount::Mount {
+      mount::Mount::of(self.command)
+    }
+  }
+
+  /// The `fim-layer stack` command.
+  pub mod stack {
+    use std::process::Command;
+
+    use anyhow::Result;
+
+    use super::super::{Collection, read};
+    use super::StackEntry;
+
+    /// The `fim-layer stack` command.
+    pub struct Stack {
+      command: Command,
+    }
+
+    impl Stack {
+      /// Composes `fim-layer stack`.
+      pub(super) fn of(mut command: Command) -> Stack {
+        command.arg("stack");
+        Stack { command }
+      }
+    }
+
+    impl Collection for Stack {
+      type Item = StackEntry;
+
+      /// The layers in the image, in stacking order.
+      fn items(mut self) -> Result<Vec<StackEntry>> {
+        let value = read(self.command.arg("list"))?;
+        Ok(serde_json::from_value(value)?)
+      }
+    }
+  }
+
+  /// The `fim-layer mount` command.
+  pub mod mount {
+    use std::process::Command;
+
+    use anyhow::Result;
+
+    use super::super::{Collection, read};
+    use super::MountEntry;
+
+    /// The `fim-layer mount` command.
+    pub struct Mount {
+      command: Command,
+    }
+
+    impl Mount {
+      /// Composes `fim-layer mount`.
+      pub(super) fn of(mut command: Command) -> Mount {
+        command.arg("mount");
+        Mount { command }
+      }
+    }
+
+    impl Collection for Mount {
+      type Item = MountEntry;
+
+      /// The mountpoints the image records, in ledger order.
+      fn items(mut self) -> Result<Vec<MountEntry>> {
+        let value = read(self.command.arg("list"))?;
+        Ok(serde_json::from_value(value)?)
+      }
     }
   }
 }

@@ -2,6 +2,7 @@
 
 mod builder;
 mod exec;
+mod layer;
 mod steps;
 
 #[path = "../harness/common.rs"]

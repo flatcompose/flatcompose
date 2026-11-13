@@ -30,6 +30,7 @@ fn a_builder_step_builds_the_root_it_names() {
         },
       }),
       exec: None,
+      layer: None,
     }],
   };
   harness.write();
@@ -92,6 +93,7 @@ fn a_builder_step_runs_a_command_against_the_flatimage() {
         },
       }),
       exec: None,
+      layer: None,
     }],
   };
   harness.write();

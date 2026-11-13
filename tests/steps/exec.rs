@@ -31,6 +31,7 @@ fn an_exec_step_runs_its_script_in_the_root_it_names() {
           },
         }),
         exec: None,
+        layer: None,
       },
       Step {
         builder: Some(Builder {
@@ -49,6 +50,7 @@ fn an_exec_step_runs_its_script_in_the_root_it_names() {
           },
         }),
         exec: None,
+        layer: None,
       },
       Step {
         builder: None,
@@ -59,6 +61,7 @@ fn an_exec_step_runs_its_script_in_the_root_it_names() {
           script: "test -x /usr/bin/zip".into(),
           position: 0,
         }),
+        layer: None,
       },
     ],
   };
@@ -108,6 +111,7 @@ fn an_exec_step_runs_its_script_as_the_uid_and_gid_it_names() {
           },
         }),
         exec: None,
+        layer: None,
       },
       Step {
         builder: None,
@@ -118,6 +122,7 @@ fn an_exec_step_runs_its_script_as_the_uid_and_gid_it_names() {
           script: script.into(),
           position: 0,
         }),
+        layer: None,
       },
     ],
   };
@@ -158,6 +163,7 @@ fn an_exec_step_runs_every_script_in_the_order_the_file_writes_them() {
           },
         }),
         exec: None,
+        layer: None,
       },
       Step {
         builder: None,
@@ -168,6 +174,7 @@ fn an_exec_step_runs_every_script_in_the_order_the_file_writes_them() {
           script: format!("# {marker}\ntouch /marker\n"),
           position: 0,
         }),
+        layer: None,
       },
       Step {
         builder: None,
@@ -178,6 +185,7 @@ fn an_exec_step_runs_every_script_in_the_order_the_file_writes_them() {
           script: "test -f /marker".into(),
           position: 0,
         }),
+        layer: None,
       },
     ],
   };
@@ -226,6 +234,7 @@ fn an_exec_step_runs_its_script_text_verbatim() {
           },
         }),
         exec: None,
+        layer: None,
       },
       Step {
         builder: None,
@@ -236,6 +245,7 @@ fn an_exec_step_runs_its_script_text_verbatim() {
           script: script.into(),
           position: 0,
         }),
+        layer: None,
       },
     ],
   };
@@ -270,6 +280,7 @@ fn an_exec_step_names_its_script_by_the_step_position() {
           },
         }),
         exec: None,
+        layer: None,
       },
       Step {
         builder: None,
@@ -280,6 +291,7 @@ fn an_exec_step_names_its_script_by_the_step_position() {
           script: "if true; then\n".into(),
           position: 0,
         }),
+        layer: None,
       },
     ],
   };
@@ -354,6 +366,7 @@ fn an_exec_step_whose_script_is_empty_is_refused() {
         script: "".into(),
         position: 0,
       }),
+      layer: None,
     }],
   };
   harness.write();
@@ -379,6 +392,7 @@ fn an_exec_step_before_the_step_that_builds_its_root_is_refused() {
           script: "true".into(),
           position: 0,
         }),
+        layer: None,
       },
       Step {
         builder: Some(Builder {
@@ -397,6 +411,7 @@ fn an_exec_step_before_the_step_that_builds_its_root_is_refused() {
           },
         }),
         exec: None,
+        layer: None,
       },
     ],
   };

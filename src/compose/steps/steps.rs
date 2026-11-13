@@ -4,7 +4,7 @@ use anyhow::Result;
 use serde::de::Deserializer;
 use serde::{Deserialize, Serialize};
 
-use crate::compose::steps::{Builder, Exec};
+use crate::compose::steps::{Builder, Exec, Layer};
 use crate::lower::{Command, Lower};
 use crate::violation::{Entry, Violation};
 
@@ -51,7 +51,7 @@ impl Lower for Steps {
 }
 
 impl Violation for Steps {
-  /// Refuses a builder with an empty pattern list and an exec with an empty script.
+  /// Refuses a builder with an empty pattern list, an exec with an empty script, and a layer without one command.
   fn violations(&self) -> Vec<Entry> {
     let mut entries = Vec::new();
 
@@ -70,13 +70,21 @@ impl Violation for Steps {
           entries.push(Entry::of(format!("steps[{index}].exec.script"), "is empty, so the step runs nothing"));
         }
       }
+
+      if let Some(layer) = &step.layer {
+        match layer.command_count() {
+          0 => entries.push(Entry::of(format!("steps[{index}].layer"), "states no layer command")),
+          1 => {}
+          _ => entries.push(Entry::of(format!("steps[{index}].layer"), "states more than one layer command")),
+        }
+      }
     }
 
     entries
   }
 }
 
-/// One entry of `steps`, naming the command the build runs with the key `builder` or `exec`.
+/// One entry of `steps`, naming the command the build runs with the key `builder`, `exec`, or `layer`.
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Step {
@@ -84,10 +92,12 @@ pub struct Step {
   pub builder: Option<Builder>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub exec: Option<Exec>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub layer: Option<Layer>,
 }
 
 impl Lower for Step {
-  /// Writes the commands the entry states, the builder's before the exec's.
+  /// Writes the commands the entry states, in the order `builder`, `exec`, `layer`.
   fn lower(&self) -> Result<Vec<Command>> {
     let mut commands = Vec::new();
 
@@ -97,6 +107,10 @@ impl Lower for Step {
 
     if let Some(exec) = &self.exec {
       commands.extend(exec.lower()?);
+    }
+
+    if let Some(layer) = &self.layer {
+      commands.extend(layer.lower()?);
     }
 
     Ok(commands)

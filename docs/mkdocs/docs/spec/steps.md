@@ -57,6 +57,39 @@ steps:
       # [required]
       script: |
         firefox --version
+  - layer:
+      overlay:
+        save:
+          # [optional, default = the live overlay: everything the earlier
+          # builder and exec steps wrote]
+          from: ./game-assets
+          # [optional, default = the FlatImage itself]
+          # a directory -> layer-NNN.layer inside it
+          # a file path -> that file
+          # "@layers"  -> the managed layers directory beside the FlatImage
+          to: ./game.layer
+  - layer:
+      stack:
+        add:
+          # [required]
+          path: ./game.layer
+          # [optional]
+          mount: /opt/game
+  - layer:
+      mount:
+        set:
+          # [required]
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+          # [required]
+          path: /opt/game
+  - layer:
+      mount:
+        del:
+          # [required]
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+  - layer:
+      mount:
+        clear: {}
 ```
 
 The `yaml` block above produces this command line:
@@ -77,6 +110,11 @@ fim-root builder \
 
 fim-root system use debian-bookworm
 fim-exec --uid 1000 --gid 1000 bash /tmp/fim/flatcompose/4821/script-1.sh
+fim-layer overlay save --from ./game-assets --to ./game.layer
+fim-layer stack add --mount /opt/game ./game.layer
+fim-layer mount set 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b /opt/game
+fim-layer mount del 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+fim-layer mount clear
 ```
 
 
@@ -100,6 +138,19 @@ As a user, I want to use the `exec` FlatImage command within the FlatCompose fil
 1. **Given** a FlatCompose file with a `builder` step and a later `exec` step naming the same source, **When** the user builds the FlatImage, **Then** the script runs inside that root, which holds the installed packages.
 2. **Given** a FlatCompose file with an `exec` step giving `uid` and `gid`, **When** the user builds the FlatImage, **Then** the script runs with that user ID and group ID.
 3. **Given** an `exec` step with an absent or empty `script`, **When** the user builds, **Then** the command refuses, naming the step.
+
+### User Story: layering content into the FlatImage
+
+As a user, I want to use the `fim-layer` FlatImage commands within the FlatCompose file to commit build changes and add layer files. Those commands also reserve paths for layers supplied at execution time.
+
+**Acceptance scenarios**:
+
+1. **Given** a FlatCompose file that states a directory to compress into a layer file, **When** FlatCompose builds, **Then** the layer file contains the directory's contents.
+2. **Given** a FlatCompose file that states a layer file with a program, **When** FlatCompose builds, **Then** the layer stack contains the layer and its program.
+3. **Given** a FlatCompose file that states a layer file with a program and a path to graft it at, **When** FlatCompose builds, **Then** the layer stack contains the layer at that path.
+4. **Given** a FlatCompose file that states a content hash and a path for a layer, **When** the user runs the FlatImage with a layer file matching that hash, **Then** the program in that layer runs at that path.
+5. **Given** a program installed by a `builder` step, **When** a later `layer` step commits it, **Then** the layer stack contains the layer.
+6. **Given** an existing layer hash, **When** FlatCompose deletes it, **Then** the FlatImage no longer records the layer's mountpoint.
 
 ## Requirements
 
@@ -135,6 +186,9 @@ fim-root builder --from debian:bookworm install firefox-esr
 
 **FR-STEPS-004**: the `steps` block MUST provide an interface for the `exec` command.
 {: #fr-steps-004 }
+
+**FR-STEPS-005**: the `steps` block MUST provide an interface for the `fim-layer` commands.
+{: #fr-steps-005 }
 
 ### The root builder
 
@@ -442,6 +496,215 @@ steps:
 ```text
 fim-root system use debian-bookworm
 fim-exec --uid 1000 --gid 1000 bash /tmp/fim/flatcompose/4821/script-0.sh
+```
+
+### The layer command
+
+**FR-LAYER-001**: the FlatCompose file MUST define the `fim-layer overlay save` command as `layer.overlay.save`.
+{: #fr-layer-001 }
+
+```yaml
+steps:
+  - layer:
+      overlay:
+        save: {}
+```
+
+```text
+fim-layer overlay save
+```
+
+**FR-LAYER-002**: the FlatCompose file MUST define the `--from <path>` option as `layer.overlay.save.from`, the directory `fim-layer overlay save` compresses. An absent `from` MUST omit the flag.
+{: #fr-layer-002 }
+
+```yaml
+steps:
+  - layer:
+      overlay:
+        save:
+          from: ./game-assets
+```
+
+```text
+fim-layer overlay save --from ./game-assets
+```
+
+**FR-LAYER-003**: the FlatCompose file MUST define the `--to <dst>` option as `layer.overlay.save.to`, the destination `fim-layer overlay save` writes the layer to. An absent `to` MUST omit the flag.
+{: #fr-layer-003 }
+
+```yaml
+steps:
+  - layer:
+      overlay:
+        save:
+          to: ./game.layer
+```
+
+```text
+fim-layer overlay save --to ./game.layer
+```
+
+**FR-LAYER-004**: the FlatCompose file MUST define the `fim-layer stack add` command as `layer.stack.add`.
+{: #fr-layer-004 }
+
+```yaml
+steps:
+  - layer:
+      stack:
+        add:
+          path: ./game.layer
+```
+
+```text
+fim-layer stack add ./game.layer
+```
+
+**FR-LAYER-005**: the FlatCompose file MUST define the layer file `fim-layer stack add` appends as `layer.stack.add.path`, a required path string.
+{: #fr-layer-005 }
+
+```yaml
+steps:
+  - layer:
+      stack:
+        add:
+          path: ./game.layer
+```
+
+```text
+fim-layer stack add ./game.layer
+```
+
+**FR-LAYER-006**: the FlatCompose file MUST define the `--mount <path>` option as `layer.stack.add.mount`, the path inside the container where `fim-layer stack add` grafts the layer. An absent `mount` MUST omit the flag.
+{: #fr-layer-006 }
+
+```yaml
+steps:
+  - layer:
+      stack:
+        add:
+          path: ./game.layer
+          mount: /opt/game
+```
+
+```text
+fim-layer stack add --mount /opt/game ./game.layer
+```
+
+**FR-LAYER-007**: the FlatCompose file MUST define the `fim-layer mount set` command as `layer.mount.set`.
+{: #fr-layer-007 }
+
+```yaml
+steps:
+  - layer:
+      mount:
+        set:
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+          path: /opt/game
+```
+
+```text
+fim-layer mount set 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b /opt/game
+```
+
+**FR-LAYER-008**: the FlatCompose file MUST define the content hash of the layer as `layer.mount.set.hash`, a required string that FlatCompose writes as the first argument of `fim-layer mount set <hash> <path>`.
+{: #fr-layer-008 }
+
+```yaml
+steps:
+  - layer:
+      mount:
+        set:
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+          path: /opt/game
+```
+
+```text
+fim-layer mount set 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b /opt/game
+```
+
+**FR-LAYER-009**: the FlatCompose file MUST define the path inside the container where the layer appears as `layer.mount.set.path`, a required string that FlatCompose writes as the second argument of `fim-layer mount set <hash> <path>`.
+{: #fr-layer-009 }
+
+```yaml
+steps:
+  - layer:
+      mount:
+        set:
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+          path: /opt/game
+```
+
+```text
+fim-layer mount set 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b /opt/game
+```
+
+**FR-LAYER-010**: the FlatCompose file MUST define the `fim-layer mount del` command as `layer.mount.del`.
+{: #fr-layer-010 }
+
+```yaml
+steps:
+  - layer:
+      mount:
+        del:
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+```
+
+```text
+fim-layer mount del 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+```
+
+**FR-LAYER-011**: the FlatCompose file MUST define the content hash of the layer as `layer.mount.del.hash`, a required string that FlatCompose writes as the argument of `fim-layer mount del <hash>`.
+{: #fr-layer-011 }
+
+```yaml
+steps:
+  - layer:
+      mount:
+        del:
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+```
+
+```text
+fim-layer mount del 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+```
+
+**FR-LAYER-012**: the FlatCompose file MUST define the `fim-layer mount clear` command as `layer.mount.clear`, an empty mapping.
+{: #fr-layer-012 }
+
+```yaml
+steps:
+  - layer:
+      mount:
+        clear: {}
+```
+
+```text
+fim-layer mount clear
+```
+
+**FR-LAYER-013**: a step's `layer` key MUST state exactly one `fim-layer` command. FlatCompose MUST refuse a key that states no command or more than one.
+{: #fr-layer-013 }
+
+```yaml
+steps:
+  - layer: {}
+```
+
+```text
+error: `steps[0].layer` states no layer command
+```
+
+```yaml
+steps:
+  - layer:
+      mount:
+        del:
+          hash: 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+        clear: {}
+```
+
+```text
+error: `steps[0].layer` states more than one layer command
 ```
 
 <!-- vale ai-tells.DoubleHyphen = NO -->

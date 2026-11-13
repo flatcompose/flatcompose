@@ -1,6 +1,7 @@
 //! The test harness
 
 use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -125,6 +126,61 @@ impl Harness {
   /// The file `image.output` states.
   pub fn path_file_output(&self) -> PathBuf {
     self.compose.image.output.clone()
+  }
+
+  /// Writes an executable script at `relative` inside the test directory and answers its path.
+  pub fn place_script(&self, relative: &str, text: &str) -> PathBuf {
+    let path_file = self.path_dir.join(relative);
+
+    if let Some(path_dir) = path_file.parent() {
+      fs::create_dir_all(path_dir).unwrap_or_else(|error| panic!("creating {}: {error}", path_dir.display()));
+    }
+
+    fs::write(&path_file, text).unwrap_or_else(|error| panic!("writing {}: {error}", path_file.display()));
+
+    let mut permissions = fs::metadata(&path_file)
+      .unwrap_or_else(|error| panic!("reading {}: {error}", path_file.display()))
+      .permissions();
+    permissions.set_mode(0o755);
+    fs::set_permissions(&path_file, permissions)
+      .unwrap_or_else(|error| panic!("marking {} executable: {error}", path_file.display()));
+
+    path_file
+  }
+
+  /// Writes a `DwarFS` layer holding `path_dir_source`, using the base image, and answers its SHA-256.
+  pub fn place_layer(&self, path_dir_source: &Path, path_file_layer: &Path) -> String {
+    let path_file_from = self.path_file_from();
+    let path_file_base = self.path_dir.join(format!("fixture-{}.flatimage", unique("base")));
+
+    fs::copy(&path_file_from, &path_file_base)
+      .unwrap_or_else(|error| panic!("copying {}: {error}", path_file_from.display()));
+
+    let mut permissions = fs::metadata(&path_file_base)
+      .unwrap_or_else(|error| panic!("reading {}: {error}", path_file_base.display()))
+      .permissions();
+    permissions.set_mode(0o755);
+    fs::set_permissions(&path_file_base, permissions)
+      .unwrap_or_else(|error| panic!("marking {} executable: {error}", path_file_base.display()));
+
+    let output = Command::new(&path_file_base)
+      .arg("fim-layer")
+      .arg("overlay")
+      .arg("save")
+      .arg("--from")
+      .arg(path_dir_source)
+      .arg("--to")
+      .arg(path_file_layer)
+      .output()
+      .unwrap_or_else(|error| panic!("running {}: {error}", path_file_base.display()));
+
+    assert!(
+      output.status.success(),
+      "flatimage could not save the layer: {}",
+      String::from_utf8_lossy(&output.stderr).trim()
+    );
+
+    flatcompose::internal::hash::sha256(path_file_layer).expect("the layer file hashes")
   }
 
   /// The file `image.from` states.

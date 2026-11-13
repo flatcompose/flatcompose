@@ -82,7 +82,7 @@ An integration test stands under `tests/` and runs the binary `cargo` builds for
 
 ## Steps
 
-`steps.md` states the `steps` block and the `builder` and `exec` commands. The cases live in `tests/steps/`, one file per family: `steps.rs` for `FR-STEPS`, `builder.rs` for `FR-BUILDER`, and `exec.rs` for `FR-EXEC`.
+`steps.md` states the `steps` block and the `builder`, `exec`, and `layer` commands. The cases live in `tests/steps/`, one file per family: `steps.rs` for `FR-STEPS`, `builder.rs` for `FR-BUILDER`, `exec.rs` for `FR-EXEC`, and `layer.rs` for `FR-LAYER`.
 
 | Rule | The claim one case checks | The case |
 |---|---|---|
@@ -115,6 +115,46 @@ An integration test stands under `tests/` and runs the binary `cargo` builds for
 | `FR-EXEC-006` | An absent `gid` omits the flag. | [../src/compose/steps/exec.rs](../src/compose/steps/exec.rs)::`lower_omits_the_flags_the_file_does_not_name` |
 | `FR-EXEC-006` | The command writes `--uid` before `--gid`. | [../src/compose/steps/exec.rs](../src/compose/steps/exec.rs)::`lower_writes_the_uid_before_the_gid` |
 | `FR-EXEC-006` | An explicit `gid: 0` stays in the command. | [../src/compose/steps/exec.rs](../src/compose/steps/exec.rs)::`lower_keeps_an_explicit_zero_uid_and_gid` |
+| `FR-STEPS-005` | A file whose steps block holds a layer step builds, and its layer file appears at the path the step states. | `steps/layer.rs::a_layer_step_builds` |
+| `FR-LAYER-001` | A builder's install followed by a live-overlay save leaves a committed layer in the image. | `steps/layer.rs::the_saved_overlay_becomes_a_committed_layer` |
+| `FR-LAYER-001` | The lowered command writes `fim-layer overlay save`. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_overlay_save_command` |
+| `FR-LAYER-002` | An absent `from` omits `--from`, and FlatCompose saves the live overlay. | `steps/layer.rs::the_saved_overlay_becomes_a_committed_layer` |
+| `FR-LAYER-002` | A save with a source writes `--from` with that directory. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_overlay_source_and_destination` |
+| `FR-LAYER-002` | The lowered command omits `--from` when the key states no source. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_omits_the_overlay_flags_the_key_does_not_name` |
+| `FR-LAYER-003` | An absent `to` omits `--to`. | `steps/layer.rs::the_saved_overlay_becomes_a_committed_layer` |
+| `FR-LAYER-003` | A save with a destination writes `--to` with that path. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_overlay_source_and_destination` |
+| `FR-LAYER-003` | The lowered command omits `--to` when the key states no destination. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_omits_the_overlay_flags_the_key_does_not_name` |
+| `FR-LAYER-002` | A save with a source writes `--from` with that directory, and FlatCompose appends the layer to the image. | `steps/layer.rs::a_saved_directory_layer_appends_to_the_image` |
+| `FR-LAYER-002` | An absent `from` omits `--from`, and FlatCompose saves the live overlay to a file. | `steps/layer.rs::saving_the_live_overlay_to_a_file_writes_that_file` |
+| `FR-LAYER-003` | An absent `to` omits `--to`, and FlatCompose appends the layer to the image. | `steps/layer.rs::a_saved_directory_layer_appends_to_the_image` |
+| `FR-LAYER-003` | A save with a destination writes `--to` with that path and keeps the layer out of the image. | `steps/layer.rs::saving_the_live_overlay_to_a_file_writes_that_file` |
+| `FR-LAYER-004` | A step with `stack.add` appends the layer file to the stack. | `steps/layer.rs::a_layer_file_is_added_to_the_stack` |
+| `FR-LAYER-004` | The lowered command writes `fim-layer stack add`. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_stack_add_command` |
+| `FR-LAYER-004` | FlatCompose refuses a `stack` key with an unknown verb. | `steps/layer.rs::a_layer_step_naming_an_unknown_verb_is_refused` |
+| `FR-LAYER-005` | FlatCompose appends the layer file the step states to the stack. | `steps/layer.rs::a_layer_file_is_added_to_the_stack` |
+| `FR-LAYER-005` | FlatCompose refuses a `stack.add` with no layer file. | `steps/layer.rs::a_stack_add_that_names_no_layer_file_is_refused` |
+| `FR-LAYER-005` | The lowered command writes the layer file as the positional argument. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_stack_add_command` |
+| `FR-LAYER-006` | A layer added with a mount runs its program at that path. | `steps/layer.rs::a_layer_file_grafts_at_its_mount` |
+| `FR-LAYER-006` | The lowered command writes `--mount` before the layer file. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_mount_before_the_layer_file` |
+| `FR-LAYER-007` | `fim-layer mount list` reports the registered hash and path. | `steps/layer.rs::an_external_layer_grafts_at_its_recorded_path` |
+| `FR-LAYER-007` | The lowered command writes `fim-layer mount set`. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_mount_set_command` |
+| `FR-LAYER-008` | The recorded registration contains the hash. | `steps/layer.rs::an_external_layer_grafts_at_its_recorded_path` |
+| `FR-LAYER-008` | FlatCompose refuses a `mount.set` with no hash. | `steps/layer.rs::a_mount_set_that_names_no_hash_is_refused` |
+| `FR-LAYER-008` | The lowered command writes the hash first. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_mount_set_command` |
+| `FR-LAYER-009` | The recorded registration contains the path. | `steps/layer.rs::an_external_layer_grafts_at_its_recorded_path` |
+| `FR-LAYER-009` | FlatCompose refuses a `mount.set` with no path. | `steps/layer.rs::a_mount_set_that_names_no_path_is_refused` |
+| `FR-LAYER-009` | The lowered command writes the path second. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_mount_set_command` |
+| `FR-LAYER-010` | A deletion removes the recorded mountpoint. | `steps/layer.rs::a_deleted_mountpoint_is_gone` |
+| `FR-LAYER-010` | The lowered command writes `fim-layer mount del`. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_mount_del_command` |
+| `FR-LAYER-011` | FlatCompose refuses a `mount.del` with no hash. | `steps/layer.rs::a_mount_del_that_names_no_hash_is_refused` |
+| `FR-LAYER-011` | The lowered command writes the hash. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_mount_del_command` |
+| `FR-LAYER-012` | Clearing removes every recorded mountpoint. | `steps/layer.rs::clearing_the_mountpoints_leaves_none` |
+| `FR-LAYER-012` | FlatCompose refuses a `mount.clear` with a key. | `steps/layer.rs::a_mount_clear_that_carries_a_key_is_refused` |
+| `FR-LAYER-012` | The lowered command writes `fim-layer mount clear`. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`lower_writes_the_mount_clear_command` |
+| `FR-LAYER-013` | FlatCompose refuses a layer that states no command. | `steps/layer.rs::a_layer_step_stating_no_command_is_refused` |
+| `FR-LAYER-013` | FlatCompose refuses a layer that states two nouns. | `steps/layer.rs::a_layer_step_stating_two_nouns_is_refused` |
+| `FR-LAYER-013` | FlatCompose refuses a layer that states two verbs. | `steps/layer.rs::a_layer_step_stating_two_verbs_is_refused` |
+| `FR-LAYER-013` | The count reports one for every verb, zero for an empty key, and more than one for a key stating two. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`command_count_counts_every_layer_command` |
 
 ## Reading a value back
 

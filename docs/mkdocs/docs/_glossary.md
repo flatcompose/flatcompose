@@ -78,25 +78,25 @@
 
 <!-- L -->
 
-*[layer]: A compressed DwarFS image appended to a FlatImage, named in the top-level `layer` key in append order.
+*[layer]: A compressed DwarFS image appended to a FlatImage.
 *[layers]: Compressed DwarFS images appended to a FlatImage.
-*[layer entry]: One item of `layer`, keyed by the `fim-layer` noun that produces it: `stack`, `overlay`, or `mount`.
-*[layer entries]: The items of `layer`, each keyed by a `fim-layer` noun.
+*[layer entry]: One `layer` key of a step, keyed by the `fim-layer` noun that produces it: `overlay`, `stack`, or `mount`.
+*[layer entries]: The `layer` keys of steps, each keyed by a `fim-layer` noun.
 *[layer file]: A `.layer` file on disk with one DwarFS image, appended with `fim-layer stack add`.
 *[layer files]: `.layer` files on disk, each with one DwarFS image.
 *[layer ledger]: The image's own record of appended layers, one entry per frame with its hash, offset, size, kind, and destination.
 
 <!-- M -->
 
-*[layer mount]: The `mount` layer entry: a mountpoint recorded for a layer by its content hash with `fim-layer mount set`.
-*[layer mounts]: The `mount` layer entries recording mountpoints by content hash.
+*[layer mount]: The `mount.set` layer key: a mountpoint recorded for a layer by its content hash with `fim-layer mount set`.
+*[layer mounts]: The `mount.set` layer keys recording mountpoints by content hash.
 
 <!-- O -->
 
 *[output]: The `image.output` file a build publishes. Required in every FlatCompose file.
 *[overlay backend]: The mechanism FlatImage merges layers with: `overlayfs`, `unionfs`, or `builtin`, set by `config.overlay`.
-*[overlay layer]: The `overlay` layer entry: a directory compressed with `fim-layer overlay save` and appended as a committed layer, or written to a file when `to` names one.
-*[overlay layers]: The `overlay` layer entries, compressed directories appended or written to a file.
+*[overlay layer]: The `overlay.save` layer key: a directory compressed with `fim-layer overlay save` and appended as a committed layer, or written to a file when `to` names one.
+*[overlay layers]: The `overlay.save` layer keys, compressed directories appended or written to a file.
 
 <!-- P -->
 
@@ -113,8 +113,8 @@
 *[sandbox]: The bubblewrap launch that confines the image's program, selected by `config.sandbox`.
 *[sidecar]: The `<output>.sha256sum` file written beside the artifact.
 *[source image]: The FlatImage `image.from` names. A build starts from it when no file sits at `output`.
-*[stack entry]: The `stack` layer entry: a layer file appended with `fim-layer stack add`, with an optional mount.
-*[stack entries]: The `stack` layer entries: layer files appended with `fim-layer stack add`.
+*[stack entry]: The `stack.add` layer key: a layer file appended with `fim-layer stack add`, with an optional mount.
+*[stack entries]: The `stack.add` layer keys: layer files appended with `fim-layer stack add`.
 *[step]: One operation of a FlatCompose file together with the context that operation accepts.
 *[steps]: The operations of a FlatCompose file, each with the context its operation accepts.
 

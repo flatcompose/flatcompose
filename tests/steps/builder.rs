@@ -79,6 +79,7 @@ fn a_builder_whose_install_names_no_pattern_is_refused() {
         },
       }),
       exec: None,
+      layer: None,
     }],
   };
   harness.write();
