@@ -104,15 +104,27 @@ impl Harness {
   /// Runs `flatcompose -f <dir>/flatcompose.yml build` in the directory, on
   /// the file `write` left there.
   pub fn run(&self) -> Outcome {
+    self.run_with_env(&[])
+  }
+
+  /// Runs the build with `vars` in the process environment.
+  pub fn run_with_env(&self, vars: &[(&str, &str)]) -> Outcome {
     let path_file_compose = self.path_file_self();
-    let output = Command::new(env!("CARGO_BIN_EXE_flatcompose"))
+    let mut command = Command::new(env!("CARGO_BIN_EXE_flatcompose"));
+    command
       .arg("-f")
       .arg(&path_file_compose)
       .arg("build")
       .current_dir(&self.path_dir)
       .stdin(Stdio::null())
       .stdout(Stdio::piped())
-      .stderr(Stdio::piped())
+      .stderr(Stdio::piped());
+
+    for (name, value) in vars {
+      command.env(name, value);
+    }
+
+    let output = command
       .output()
       .unwrap_or_else(|error| panic!("running {}: {error}", env!("CARGO_BIN_EXE_flatcompose")));
 

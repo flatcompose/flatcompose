@@ -156,6 +156,38 @@ An integration test stands under `tests/` and runs the binary `cargo` builds for
 | `FR-LAYER-013` | FlatCompose refuses a layer that states two verbs. | `steps/layer.rs::a_layer_step_stating_two_verbs_is_refused` |
 | `FR-LAYER-013` | The count reports one for every verb, zero for an empty key, and more than one for a key stating two. | [../src/compose/steps/layer.rs](../src/compose/steps/layer.rs)::`command_count_counts_every_layer_command` |
 
+## Environment
+
+`environment.md` states the references a FlatCompose file takes from the environment. The cases live in `tests/environment/envvar.rs`.
+
+| Rule | The claim one case checks | The case |
+|---|---|---|
+| `FR-ENV-VAR-001` | The image stores the braced reference's environment value. | `envvar.rs::a_braced_reference_takes_the_environment_value` |
+| `FR-ENV-VAR-001` | The image stores the bare reference's environment value. | `envvar.rs::a_bare_reference_takes_the_environment_value` |
+| `FR-ENV-VAR-001` | A reference in the image output publishes the file at the resolved path. | `envvar.rs::a_reference_builds_the_published_file` |
+| `FR-ENV-VAR-001` | FlatCompose resolves a reference in a list item and the image stores the value. | `envvar.rs::a_reference_in_a_list_item_reaches_the_image` |
+| `FR-ENV-VAR-001` | FlatCompose resolves a reference in a mapping key and the image stores the value. | `envvar.rs::a_reference_in_a_mapping_key_reaches_the_image` |
+| `FR-ENV-VAR-001` | An empty value resolves as a value, and the build completes without a warning. | `envvar.rs::an_empty_value_is_not_unset` |
+| `FR-ENV-VAR-004` | An empty value resolves as a value, and the build completes without a warning. | `envvar.rs::an_empty_value_is_not_unset` |
+| `FR-ENV-VAR-002` | A default fills an unset variable. | `envvar.rs::a_default_fills_an_unset_variable` |
+| `FR-ENV-VAR-002` | A default fills an empty variable. | `envvar.rs::a_default_fills_an_empty_variable` |
+| `FR-ENV-VAR-003` | A default without a colon fills an unset variable. | `envvar.rs::a_default_without_a_colon_fills_an_unset_variable` |
+| `FR-ENV-VAR-003` | A default without a colon keeps an empty value. | `envvar.rs::a_default_without_a_colon_keeps_an_empty_value` |
+| `FR-ENV-VAR-005` | `$$` writes one dollar. | `envvar.rs::a_double_dollar_writes_one_dollar` |
+| `FR-ENV-VAR-005` | `$$` writes a literal dollar before a digit. | `envvar.rs::a_double_dollar_writes_a_literal_dollar_before_a_digit` |
+| `FR-ENV-VAR-005` | `$$` before a braced reference keeps it literal. | `envvar.rs::a_double_dollar_before_a_braced_reference_keeps_it_literal` |
+| `FR-ENV-VAR-005` | FlatCompose refuses an unescaped dollar. | `envvar.rs::an_unescaped_dollar_is_refused` |
+| `FR-ENV-VAR-006` | A value from the environment resolves once. | `envvar.rs::a_value_from_the_environment_resolves_once` |
+| `FR-ENV-VAR-007` | A boolean field reads a reference. | `envvar.rs::a_reference_resolves_a_boolean` |
+| `FR-ENV-VAR-007` | A builder reads its options from references. | `envvar.rs::a_builder_reads_its_options_from_the_environment` |
+| `FR-ENV-VAR-004` | FlatCompose leaves the exec script as written and does not warn. | `envvar.rs::the_exec_script_is_left_as_written` |
+| `FR-ENV-VAR-007` | FlatCompose leaves the exec script as written. | `envvar.rs::the_exec_script_is_left_as_written` |
+| `FR-ENV-VAR-007` | FlatCompose refuses a count reference with a non-numeric value. | `envvar.rs::a_count_reference_that_is_not_a_number_is_refused` |
+| `FR-ENV-VAR-007` | FlatCompose refuses a boolean reference with a non-boolean value. | `envvar.rs::a_boolean_reference_that_is_not_a_boolean_is_refused` |
+| `FR-ENV-VAR-007` | FlatCompose refuses an architecture reference outside the five. | `envvar.rs::an_architecture_reference_outside_the_five_is_refused` |
+| `FR-ENV-VAR-004` | An unset variable empties and warns. | `envvar.rs::an_unset_variable_empties_and_warns` |
+| `FR-ENV-VAR-004` | An unset variable warns once. | `envvar.rs::an_unset_variable_warns_once` |
+
 ## Reading a value back
 
 `FR-CONFIG-002` says a build runs the command of every key. A case turns that claim into an observation by reading the setting with flatimage's own verb.
