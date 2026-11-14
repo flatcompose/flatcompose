@@ -13,7 +13,11 @@ pub struct Image {
   #[serde(skip_serializing_if = "Option::is_none")]
   pub from: Option<From>,
   pub output: PathBuf,
-  #[serde(default, skip_serializing_if = "Image::is_false")]
+  #[serde(
+    default,
+    deserialize_with = "crate::internal::scalar::boolean",
+    skip_serializing_if = "Image::is_false"
+  )]
   pub inplace: bool,
   #[serde(default, skip_serializing_if = "Vec::is_empty")]
   pub arch: Vec<Arch>,

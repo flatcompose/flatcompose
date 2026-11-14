@@ -5,9 +5,10 @@ site_dir: "site"
 nav:
   - Overview: index.md
   - Specs:
-    - Compose: spec/compose.md
+    - Image: spec/image.md
     - Configure: spec/configure.md
     - Steps: spec/steps.md
+    - Environment: spec/environment.md
   - Plans:
     - Design: plans/design.md
     - Test suite and harness: plans/design-tests.md

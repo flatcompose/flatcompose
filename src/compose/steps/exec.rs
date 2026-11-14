@@ -14,9 +14,17 @@ use crate::lower::{Command, Lower};
 #[serde(deny_unknown_fields)]
 pub struct Exec {
   pub from: String,
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[serde(
+    default,
+    deserialize_with = "crate::internal::scalar::optional_u32",
+    skip_serializing_if = "Option::is_none"
+  )]
   pub uid: Option<u32>,
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[serde(
+    default,
+    deserialize_with = "crate::internal::scalar::optional_u32",
+    skip_serializing_if = "Option::is_none"
+  )]
   pub gid: Option<u32>,
   pub script: String,
   /// The entry's position among the steps. It sets the script file name.

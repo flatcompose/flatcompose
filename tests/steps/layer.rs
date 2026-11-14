@@ -771,7 +771,7 @@ fn a_mount_del_that_names_no_hash_is_refused() {
       steps:
         - layer:
             mount:
-              del: {}
+              del: {{}}
     "},
     harness.path_file_from().display(),
     harness.path_file_output().display()
@@ -822,7 +822,7 @@ fn a_layer_step_naming_an_unknown_verb_is_refused() {
       steps:
         - layer:
             stack:
-              remove: {}
+              remove: {{}}
     "},
     harness.path_file_from().display(),
     harness.path_file_output().display()

@@ -9,7 +9,7 @@ tags:
 | | |
 |---|---|
 | **Trigger** | `flatcompose -f <file> build`, carrying a `config` block |
-| **Requires** | A FlatCompose file and its build, per [Compose](compose.md) |
+| **Requires** | A FlatCompose file and its build, per [Image](image.md) |
 | **Actor** | A user describing one FlatImage application as a file |
 
 The `config` block configures the FlatImage: the permissions, namespaces, runtime options, overlay backend, sandbox mode, and so on. FlatCompose turns each key into the `fim-*` commands it states and runs them once the build's steps have run. The FlatImage then ends the build in the state the block declares.
@@ -93,7 +93,7 @@ A user writes their application's configuration into the FlatCompose file once. 
 
 ### The reserved-space configuration
 
-**FR-CONFIG-001**: the `config` block declares the FlatImage's reserved-space configuration, and each key in it MUST come from the [Compose schema](compose.md#schema).
+**FR-CONFIG-001**: the `config` block declares the FlatImage's reserved-space configuration, and each key in it MUST come from the schema this page states.
 {: #fr-config-001 }
 
 **FR-CONFIG-002**: FlatCompose MUST run the `fim-*` command of every key in the file's `config` block, once the `steps` finish.

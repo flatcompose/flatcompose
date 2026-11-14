@@ -9,7 +9,7 @@ tags:
 | | |
 |---|---|
 | **Trigger** | `flatcompose -f <file> build`, carrying a `steps` block |
-| **Requires** | A FlatCompose file and its build, per [Compose](compose.md) |
+| **Requires** | A FlatCompose file and its build, per [Image](image.md) |
 | **Actor** | A user describing one FlatImage application as a file |
 
 The `steps` block forms the assembly interface for FlatImage. The schema below defines the valid keys and their defaults.

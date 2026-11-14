@@ -4,10 +4,12 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
+use serde_yaml::Value;
 
 use crate::compose::config::Config;
 use crate::compose::image::{From, Image};
 use crate::compose::steps::Steps;
+use crate::internal::environment::{Environment, Exclusion, Resolve};
 use crate::internal::{hash, http};
 use crate::lower::Lower;
 use crate::violation::{Entry, Violation};
@@ -27,7 +29,7 @@ pub struct Compose {
 
 impl Compose {
   /// Reads the file into the struct serde fills
-  pub fn parse(path_file_compose: &Path) -> Result<Compose, serde_yaml::Error> {
+  pub fn parse(path_file_compose: &Path, environment: &mut Environment) -> Result<Compose, serde_yaml::Error> {
     let text = std::fs::read_to_string(path_file_compose).map_err(|error| {
       <serde_yaml::Error as serde::de::Error>::custom(format!(
         "could not read `{}`: {error}",
@@ -35,7 +37,12 @@ impl Compose {
       ))
     })?;
 
-    let mut compose: Compose = serde_yaml::from_str(&text)?;
+    let value: Value = serde_yaml::from_str(&text)?;
+    let exclusion = Exclusion::of(&[&["steps", "*", "exec", "script"]]);
+    let value = Resolve::new(environment, &exclusion)
+      .value(value)
+      .map_err(<serde_yaml::Error as serde::de::Error>::custom)?;
+    let mut compose: Compose = serde_yaml::from_value(value)?;
     compose.path_file_compose = path_file_compose.to_path_buf();
 
     Ok(compose)

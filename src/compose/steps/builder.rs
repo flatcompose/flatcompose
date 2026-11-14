@@ -15,7 +15,11 @@ pub struct Builder {
   pub from: String,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub arch: Option<Arch>,
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[serde(
+    default,
+    deserialize_with = "crate::internal::scalar::optional_u32",
+    skip_serializing_if = "Option::is_none"
+  )]
   pub http_retries: Option<u32>,
   pub install: Install,
 }
@@ -59,9 +63,17 @@ pub struct Install {
   pub exclude: Option<Vec<String>>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub postinstall: Option<Vec<String>>,
-  #[serde(skip_serializing_if = "Option::is_none")]
+  #[serde(
+    default,
+    deserialize_with = "crate::internal::scalar::optional_u32",
+    skip_serializing_if = "Option::is_none"
+  )]
   pub parallel: Option<u32>,
-  #[serde(default, skip_serializing_if = "Install::is_false")]
+  #[serde(
+    default,
+    deserialize_with = "crate::internal::scalar::boolean",
+    skip_serializing_if = "Install::is_false"
+  )]
   pub no_deps: bool,
 }
 

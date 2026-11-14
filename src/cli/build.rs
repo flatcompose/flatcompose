@@ -6,11 +6,13 @@ use std::process::ExitCode;
 use anyhow::Result;
 
 use crate::compose::Compose;
+use crate::internal::environment::Environment;
 use crate::violation::{Violation, Violations};
 
 /// Reports a broken file or a refused one, then builds.
 pub fn run(path_file_compose: &Path) -> Result<ExitCode> {
-  let compose = match Compose::parse(path_file_compose) {
+  let mut environment = Environment::from_process();
+  let compose = match Compose::parse(path_file_compose, &mut environment) {
     Ok(compose) => compose,
     Err(error) => {
       eprintln!("error: {error}");

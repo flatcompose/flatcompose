@@ -10,7 +10,7 @@ An integration test stands under `tests/` and runs the binary `cargo` builds for
 
 ## Compose
 
-`compose.md` states the `image` block. The cases live in `tests/image/image.rs`.
+`image.md` states the `image` block. The cases live in `tests/image/image.rs`.
 
 | Rule | The claim one case checks | The case |
 |---|---|---|
@@ -37,7 +37,7 @@ An integration test stands under `tests/` and runs the binary `cargo` builds for
 | `FR-IMAGE-005` | A file listing every architecture token builds and writes the file at `image.output`. | `image.rs::every_arch_token_is_accepted` |
 | `FR-IMAGE-005` | An `arch` list naming `mips64` exits non-zero and prints `mips64` on stderr, with nothing on stdout. | `image.rs::an_arch_token_outside_the_valid_values_is_refused` |
 | `FR-IMAGE-005` | A file that omits `arch` builds. | `image.rs::an_absent_arch_list_builds` |
-| `FR-IMAGE-006` | A file stating `output` alone, with no file there, gets refused with the message `compose.md` fixes. | `image.rs::a_build_with_nothing_to_start_from_is_refused` |
+| `FR-IMAGE-006` | A file stating `output` alone, with no file there, gets refused with the message `image.md` fixes. | `image.rs::a_build_with_nothing_to_start_from_is_refused` |
 
 ## Configure
 
