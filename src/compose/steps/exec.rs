@@ -74,6 +74,9 @@ impl Lower for Exec {
     }
 
     argv.push("bash".into());
+    argv.push("-e".into());
+    argv.push("-o".into());
+    argv.push("pipefail".into());
     argv.push(path_file_script.into_os_string());
 
     Ok(vec![
@@ -138,7 +141,7 @@ mod tests {
     let commands = exec().lower().expect("the commands lower");
     let path_file_script = path_file_script(0).to_string_lossy().into_owned();
 
-    assert_eq!(argv(&commands[1]), vec!["fim-exec", "bash", &path_file_script]);
+    assert_eq!(argv(&commands[1]), vec!["fim-exec", "bash", "-e", "-o", "pipefail", &path_file_script]);
   }
 
   // covers: FR-EXEC-004
@@ -159,7 +162,7 @@ mod tests {
     let commands = exec().lower().expect("the commands lower");
     let path_file_script = path_file_script(0).to_string_lossy().into_owned();
 
-    assert_eq!(argv(&commands[1]), vec!["fim-exec", "bash", &path_file_script]);
+    assert_eq!(argv(&commands[1]), vec!["fim-exec", "bash", "-e", "-o", "pipefail", &path_file_script]);
   }
 
   // covers: FR-EXEC-006
@@ -172,7 +175,21 @@ mod tests {
     let commands = exec.lower().expect("the commands lower");
     let path_file_script = path_file_script(0).to_string_lossy().into_owned();
 
-    assert_eq!(argv(&commands[1]), vec!["fim-exec", "--uid", "1000", "--gid", "4242", "bash", &path_file_script]);
+    assert_eq!(
+      argv(&commands[1]),
+      vec![
+        "fim-exec",
+        "--uid",
+        "1000",
+        "--gid",
+        "4242",
+        "bash",
+        "-e",
+        "-o",
+        "pipefail",
+        &path_file_script
+      ]
+    );
   }
 
   // covers: FR-EXEC-005, FR-EXEC-006
@@ -185,6 +202,20 @@ mod tests {
     let commands = exec.lower().expect("the commands lower");
     let path_file_script = path_file_script(0).to_string_lossy().into_owned();
 
-    assert_eq!(argv(&commands[1]), vec!["fim-exec", "--uid", "0", "--gid", "0", "bash", &path_file_script]);
+    assert_eq!(
+      argv(&commands[1]),
+      vec![
+        "fim-exec",
+        "--uid",
+        "0",
+        "--gid",
+        "0",
+        "bash",
+        "-e",
+        "-o",
+        "pipefail",
+        &path_file_script
+      ]
+    );
   }
 }

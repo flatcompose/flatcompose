@@ -108,6 +108,9 @@ An integration test stands under `tests/` and runs the binary `cargo` builds for
 | `FR-EXEC-004` | A step that succeeds leaves its script file behind, under the build's pid directory. | `steps/exec.rs::an_exec_step_runs_every_script_in_the_order_the_file_writes_them` |
 | `FR-EXEC-004` | A step that omits `script` exits non-zero naming the field, and doesn't leave a digest file. | `steps/exec.rs::an_exec_step_that_names_no_script_is_refused` |
 | `FR-EXEC-004` | A step with an empty `script` exits non-zero naming `steps[0].exec.script`, and doesn't leave a digest file. | `steps/exec.rs::an_exec_step_whose_script_is_empty_is_refused` |
+| `FR-EXEC-004` | A script whose middle command fails ends the build, and the run doesn't leave a digest file. | `steps/exec.rs::an_exec_step_whose_middle_command_fails_ends_the_build` |
+| `FR-EXEC-004` | A script that disables errexit with `set +e` continues past a failure and succeeds. | `steps/exec.rs::an_exec_step_can_disable_errexit` |
+| `FR-EXEC-004` | A pipeline with a failing stage ends the build. | `steps/exec.rs::an_exec_step_whose_pipeline_stage_fails_ends_the_build` |
 | `FR-EXEC-005` | A step naming `uid: 1000` runs its script with `$EUID` 1000. | `steps/exec.rs::an_exec_step_runs_its_script_as_the_uid_and_gid_it_names` |
 | `FR-EXEC-005` | An absent `uid` omits the flag. | [../src/compose/steps/exec.rs](../src/compose/steps/exec.rs)::`lower_omits_the_flags_the_file_does_not_name` |
 | `FR-EXEC-005` | An explicit `uid: 0` stays in the command. | [../src/compose/steps/exec.rs](../src/compose/steps/exec.rs)::`lower_keeps_an_explicit_zero_uid_and_gid` |

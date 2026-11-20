@@ -5,3 +5,5 @@ target
 # Vale's rule packages
 styles/*
 !styles/custom/
+
+tmp/*

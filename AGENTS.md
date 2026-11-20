@@ -34,6 +34,7 @@ The unit tests for a module appear beside it under `#[cfg(test)]`. Integration t
 8. Each entity renders its own argv. FlatCompose builds commands in each entity.
 9. FlatCompose refuses a layer key with zero commands or more than one (`FR-LAYER-013`).
 10. The FlatImage runtime runs as a separate process. FlatCompose passes that process an argument list.
+11. The `exec` script runs with errexit and pipefail (`FR-EXEC-004`).
 
 ## Code style
 

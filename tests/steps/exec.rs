@@ -330,6 +330,156 @@ fn an_exec_step_that_names_no_source_is_refused() {
 
 // covers: FR-EXEC-004
 #[test]
+fn an_exec_step_whose_middle_command_fails_ends_the_build() {
+  let mut harness = Harness::new("exec-middle-failure");
+  let script = indoc! {r#"
+    false
+    echo ok
+  "#};
+  harness.compose().steps = Steps {
+    entries: vec![
+      Step {
+        builder: Some(Builder {
+          from: "debian:bookworm".into(),
+          arch: None,
+          http_retries: None,
+          install: Install {
+            patterns: vec!["hello".into()],
+            pattern_type: None,
+            pattern_match: None,
+            with: None,
+            exclude: None,
+            postinstall: None,
+            parallel: None,
+            no_deps: false,
+          },
+        }),
+        exec: None,
+        layer: None,
+      },
+      Step {
+        builder: None,
+        exec: Some(Exec {
+          from: "debian:bookworm".into(),
+          uid: None,
+          gid: None,
+          script: script.into(),
+          position: 0,
+        }),
+        layer: None,
+      },
+    ],
+  };
+  harness.write();
+
+  let outcome = harness.run();
+
+  assert!(outcome.refused_with("`fim-exec` failed"), "{outcome:?}");
+  assert!(!path_file_digest(&harness.path_file_output()).exists());
+}
+
+// covers: FR-EXEC-004
+#[test]
+fn an_exec_step_can_disable_errexit() {
+  let mut harness = Harness::new("exec-errexit-off");
+  let script = indoc! {r#"
+    set +e
+    false
+    echo ok
+  "#};
+  harness.compose().steps = Steps {
+    entries: vec![
+      Step {
+        builder: Some(Builder {
+          from: "debian:bookworm".into(),
+          arch: None,
+          http_retries: None,
+          install: Install {
+            patterns: vec!["hello".into()],
+            pattern_type: None,
+            pattern_match: None,
+            with: None,
+            exclude: None,
+            postinstall: None,
+            parallel: None,
+            no_deps: false,
+          },
+        }),
+        exec: None,
+        layer: None,
+      },
+      Step {
+        builder: None,
+        exec: Some(Exec {
+          from: "debian:bookworm".into(),
+          uid: None,
+          gid: None,
+          script: script.into(),
+          position: 0,
+        }),
+        layer: None,
+      },
+    ],
+  };
+  harness.write();
+
+  let outcome = harness.run();
+
+  assert!(outcome.succeeded(), "{outcome:?}");
+  assert!(path_file_digest(&harness.path_file_output()).exists());
+}
+
+// covers: FR-EXEC-004
+#[test]
+fn an_exec_step_whose_pipeline_stage_fails_ends_the_build() {
+  let mut harness = Harness::new("exec-pipeline-failure");
+  let script = indoc! {r#"
+    false | true
+  "#};
+  harness.compose().steps = Steps {
+    entries: vec![
+      Step {
+        builder: Some(Builder {
+          from: "debian:bookworm".into(),
+          arch: None,
+          http_retries: None,
+          install: Install {
+            patterns: vec!["hello".into()],
+            pattern_type: None,
+            pattern_match: None,
+            with: None,
+            exclude: None,
+            postinstall: None,
+            parallel: None,
+            no_deps: false,
+          },
+        }),
+        exec: None,
+        layer: None,
+      },
+      Step {
+        builder: None,
+        exec: Some(Exec {
+          from: "debian:bookworm".into(),
+          uid: None,
+          gid: None,
+          script: script.into(),
+          position: 0,
+        }),
+        layer: None,
+      },
+    ],
+  };
+  harness.write();
+
+  let outcome = harness.run();
+
+  assert!(outcome.refused_with("`fim-exec` failed"), "{outcome:?}");
+  assert!(!path_file_digest(&harness.path_file_output()).exists());
+}
+
+// covers: FR-EXEC-004
+#[test]
 fn an_exec_step_that_names_no_script_is_refused() {
   let harness = Harness::new("exec-script-absent");
   let text = format!(

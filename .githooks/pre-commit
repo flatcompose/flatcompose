@@ -22,4 +22,4 @@ command -v vale >/dev/null 2>&1 || {
 }
 
 vale sync
-vale --config="$path_root/.vale.ini" "$path_root/src" "$path_root/docs" "$path_root/tests"
+vale --config="$path_root/.vale.ini" "$path_root/src" "$path_root/docs" "$path_root/tests" "$path_root/AGENTS.md" "$path_root/.agents"

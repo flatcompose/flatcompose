@@ -109,7 +109,7 @@ fim-root builder \
         --no-deps firefox-esr
 
 fim-root system use debian-bookworm
-fim-exec --uid 1000 --gid 1000 bash /tmp/fim/flatcompose/4821/script-1.sh
+fim-exec --uid 1000 --gid 1000 bash -e -o pipefail /tmp/fim/flatcompose/4821/script-1.sh
 fim-layer overlay save --from ./game-assets --to ./game.layer
 fim-layer stack add --mount /opt/game ./game.layer
 fim-layer mount set 9f2b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b /opt/game
@@ -138,6 +138,7 @@ As a user, I want to use the `exec` FlatImage command within the FlatCompose fil
 1. **Given** a FlatCompose file with a `builder` step and a later `exec` step naming the same source, **When** the user builds the FlatImage, **Then** the script runs inside that root, which holds the installed packages.
 2. **Given** a FlatCompose file with an `exec` step giving `uid` and `gid`, **When** the user builds the FlatImage, **Then** the script runs with that user ID and group ID.
 3. **Given** an `exec` step with an absent or empty `script`, **When** the user builds, **Then** the command refuses, naming the step.
+4. **Given** an `exec` step whose script fails in the middle and succeeds at the end, **When** the user builds the FlatImage, **Then** the build fails at that step.
 
 ### User Story: layering content into the FlatImage
 
@@ -419,7 +420,7 @@ steps:
 
 ```text
 fim-root system use debian-bookworm
-fim-exec bash /tmp/fim/flatcompose/4821/script-0.sh
+fim-exec bash -e -o pipefail /tmp/fim/flatcompose/4821/script-0.sh
 ```
 
 **FR-EXEC-002**: the FlatCompose file MUST define the `--from <source>` option as `exec.from`, a required string that states the source whose root the script runs in.
@@ -438,14 +439,15 @@ steps:
 
 ```text
 fim-root system use ubuntu-noble-2024-06-15
-fim-exec bash /tmp/fim/flatcompose/4821/script-0.sh
+fim-exec bash -e -o pipefail /tmp/fim/flatcompose/4821/script-0.sh
 ```
 
 **FR-EXEC-004**: the FlatCompose file MUST define the shell script the command runs as `exec.script`, a required non-empty string.
 {: #fr-exec-004 }
 
 - FlatCompose MUST write the script to `/tmp/fim/flatcompose/<build-pid>/script-<n>.sh`, where `<build-pid>` gives the build process ID and `<n>` gives the step's 0-based position in `steps:`.
-- FlatCompose MUST run it as `bash <path>`, so the script text never enters the argument list.
+- FlatCompose MUST run it as `bash -e -o pipefail <path>`, so the script text never enters the argument list.
+- A failing command or pipeline stage MUST end the step. The script MAY opt out with `set +e` or `set +o pipefail`.
 - FlatCompose MUST make the file readable by the step's `uid`/`gid`.
 - FlatCompose MUST leave the file in place for inspection after a failed step. The build's pid directory keeps each build's scripts apart.
 - FlatCompose MUST refuse an `exec` that omits `script` or leaves it empty.
@@ -460,7 +462,7 @@ steps:
 
 ```text
 fim-root system use debian-bookworm
-fim-exec bash /tmp/fim/flatcompose/4821/script-0.sh
+fim-exec bash -e -o pipefail /tmp/fim/flatcompose/4821/script-0.sh
 ```
 
 **FR-EXEC-005**: the FlatCompose file MUST define the `--uid <uid>` option as `exec.uid`, an optional integer user ID. An absent `exec.uid` MUST omit the flag.
@@ -477,7 +479,7 @@ steps:
 
 ```text
 fim-root system use debian-bookworm
-fim-exec --uid 1000 bash /tmp/fim/flatcompose/4821/script-0.sh
+fim-exec --uid 1000 bash -e -o pipefail /tmp/fim/flatcompose/4821/script-0.sh
 ```
 
 **FR-EXEC-006**: the FlatCompose file MUST define the `--gid <gid>` option as `exec.gid`, an optional integer group ID. An absent `exec.gid` MUST omit the flag, and when both appear FlatCompose MUST emit `--uid` before `--gid`.
@@ -495,7 +497,7 @@ steps:
 
 ```text
 fim-root system use debian-bookworm
-fim-exec --uid 1000 --gid 1000 bash /tmp/fim/flatcompose/4821/script-0.sh
+fim-exec --uid 1000 --gid 1000 bash -e -o pipefail /tmp/fim/flatcompose/4821/script-0.sh
 ```
 
 ### The layer command

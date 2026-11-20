@@ -50,6 +50,12 @@ A case builds the FlatCompose file as the product's own types, and `Harness::wri
 
 A case writes raw text for a key or a value the types cannot represent.
 
+## Inline setup
+
+A case builds its own setup inside the test function. Helper functions do not appear in the test cases.
+
+A multi-line script uses `indoc! {r#"..."#}` or a raw string. A case does not join lines with `\n`.
+
 ## The tag states the rule
 
 Each test function states a `// covers: <id>` tag naming the spec item it checks, and `tests/README.md` lists the row that matches it. The tags and the rows cover the same set. A read of these files together finds any gap.

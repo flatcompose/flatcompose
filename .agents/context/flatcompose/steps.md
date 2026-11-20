@@ -8,7 +8,7 @@
 
 ## Contracts
 
-The spec fixes each operation's fields and refusals. The code adds two facts. A step may state more than one operation. FlatCompose writes the `exec` script during lowering.
+The spec fixes each operation's fields and refusals. The code adds two facts. A step may state more than one operation. FlatCompose writes the `exec` script during lowering and runs it with `bash -e -o pipefail`.
 
 ## Gotchas
 
