@@ -1,4 +1,10 @@
 target
 .flatcompose
+.git
+tmp
+test-results
+*.log
+site
+docs/mkdocs/site
 # Runtime overrides reach the container through `--env-file` at run time, never baked in.
 **/.env*
