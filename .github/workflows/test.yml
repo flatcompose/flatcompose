@@ -1,0 +1,61 @@
+name: Test
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      BUILDKIT_PROGRESS: plain
+    steps:
+      - uses: actions/checkout@v4
+
+      # The runtime override is gitignored; CI writes it from the FLATIMAGE
+      # repository variable so the Dockerfile.tests path is identical to a
+      # local run and no runtime URL lives in the repository.
+      - name: Provision test runtime override
+        run: |
+          if [ -z '${{ vars.FLATIMAGE }}' ]; then
+            echo 'ERROR: repository variable FLATIMAGE is not set (URL or path of core-x86_64.flatimage)' >&2
+            exit 1
+          fi
+          mkdir -p docker
+          printf 'FLATIMAGE=%s\n' \
+            '${{ vars.FLATIMAGE }}' \
+            > docker/.env.tests
+
+      # The Dockerfile is the recipe; the runner only drives docker. Tests run
+      # real FlatImage builds, so the container is privileged with /dev/fuse.
+      - name: Build test image
+        run: |
+          set -o pipefail
+          docker build -f docker/Dockerfile.tests -t flatcompose-tests . \
+            2>&1 | tee log-build-tests.log
+
+      - name: Run tests
+        run: |
+          set -o pipefail
+          mkdir -p test-results
+          docker run --rm --privileged --device /dev/fuse \
+            --env-file docker/.env.tests \
+            -v "$PWD/test-results:/workspace/test-results" \
+            flatcompose-tests \
+            2>&1 | tee test-results/nextest.log
+
+      - name: Upload test results (GitHub)
+        if: always() && contains(github.server_url, 'github.com')
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            test-results/
+            log-build-tests.log
+
+      - name: Upload test results (Gitea)
+        if: always() && !contains(github.server_url, 'github.com')
+        uses: christopherhx/gitea-upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
