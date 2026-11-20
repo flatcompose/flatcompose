@@ -36,7 +36,7 @@ Each test works in a directory of its own, and the path it gets has one part per
 
 The directory goes when the test ends.
 
-Every file a test creates stands inside that directory, and every file the suite creates stands there too. A test writes only inside its own directory, never to `/tmp`, to the home directory itself, or to the source tree.
+Every file a test creates stands inside that directory, and every file the suite creates stands there too. A test writes inside its own directory, never to `/tmp`, to the home directory itself, or to the source tree.
 
 ## Reading a setting
 
@@ -48,13 +48,13 @@ A test says what a user sees, and a change to how flatimage stores a setting lea
 
 A case builds the FlatCompose file as the product's own types, and `Harness::write` turns them into the file. No case assembles YAML text by hand.
 
-A case writes raw text only when it states a key or a value the types cannot represent.
+A case writes raw text for a key or a value the types cannot represent.
 
 ## The tag states the rule
 
 Each test function states a `// covers: <id>` tag naming the spec item it checks, and `tests/README.md` lists the row that matches it. The tags and the rows cover the same set. A read of these files together finds any gap.
 
-A case exists only for a rule a spec page states. When a case checks a behaviour the spec does not state, the spec page changes first.
+A case exists for a rule a spec page states. When a case checks a behaviour the spec does not state, the spec page changes first.
 
 ## Each test target declares the harness
 
@@ -85,8 +85,8 @@ A case states a rule a spec page states, and a case comes from that page. A case
 
 When a case fails, the code has the bug. Nobody rewrites a case to match the code it caught.
 
-A case changes only when the spec changes, in the same change as the spec.
+A case changes when the spec changes, in the same change as the spec.
 
 ## A test never turns itself off
 
-No `#[ignore]`, no `cfg` that removes a case, and no early return that skips a check. A case that cannot run fails with a message stating what it lacks, which matches how a missing `FLATIMAGE` behaves.
+No `#[ignore]`, no `cfg` that removes a case, and no return that skips a check. A case that cannot run fails with a message stating what it lacks, which matches how a missing `FLATIMAGE` behaves.

@@ -21,7 +21,7 @@ pub struct Layer {
 }
 
 impl Layer {
-  /// The number of `fim-layer` commands the `layer` key states. A `layer` key must state exactly one.
+  /// The number of `fim-layer` commands the `layer` key states. A `layer` key must state one.
   pub(crate) fn command_count(&self) -> usize {
     let overlay = self
       .overlay

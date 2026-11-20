@@ -48,7 +48,9 @@
 
 <!-- vale ai-tells.MotionMetaphors = NO -->
 <!-- `DwarFS` reads as the verb "dwarfs" to the motion rule, and the name recurs from this entry onward, so the exemption runs to the end of the file. -->
+<!-- vale write-good.Adverbs = NO -->
 *[DwarFS]: Deduplicating Warp-speed Advanced Read-only File System, the compressed read-only filesystem every FlatImage layer uses.
+<!-- vale write-good.Adverbs = YES -->
 
 <!-- E -->
 
@@ -58,7 +60,7 @@
 
 <!-- F -->
 
-*[FlatCompose]: The declarative builder that reads a FlatCompose file and turns each key into exactly one `fim-*` command.
+*[FlatCompose]: The declarative builder that reads a FlatCompose file and turns each key into one `fim-*` command.
 *[FlatCompose file]: The YAML document, passed with `-f`, that describes one FlatImage: its `image` block, its `layer` entries, its `steps`, and its `config`.
 *[FlatCompose files]: The YAML documents that describe one FlatImage each.
 *[FlatImage]: The single-file Linux application FlatCompose builds: one executable made of the runtime, the appended layers and the reserved space.
@@ -69,7 +71,7 @@
 <!-- I -->
 
 *[image block]: The `image` key of a FlatCompose file: the FlatImage the build starts from (`from`), the file it publishes (`output`), whether it composes in place, and the architectures installs build for.
-*[included layer]: A layer `fim-layer stack add` appended from a layer file, recorded in the ledger as `included`. Only an included layer takes a mount.
+*[included layer]: A layer `fim-layer stack add` appended from a layer file, recorded in the ledger as `included`. An included layer takes a mount. No other layer does.
 *[included layers]: Layers `fim-layer stack add` appended from layer files.
 *[inplace]: The `image.inplace` choice. `true` composes into the file already at `output`; `false`, the default, composes into a copy and overwrites `output`.
 *[install step]: A step whose operation installs packages into a root through `fim-root builder`.

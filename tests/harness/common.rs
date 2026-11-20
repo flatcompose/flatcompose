@@ -34,7 +34,7 @@ fn unique(label: &str) -> String {
   format!("{label}-{}-{serial}", std::process::id())
 }
 
-/// The suite writes under the home directory, so it runs inside a container only.
+/// The suite writes under the home directory, so it runs inside a container.
 fn require_container() {
   assert!(Path::new("/.dockerenv").exists(), "the suite must run inside a container. See tests/AGENTS.md");
 }

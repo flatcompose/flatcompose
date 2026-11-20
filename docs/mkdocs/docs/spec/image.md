@@ -12,9 +12,9 @@ tags:
 | **Requires** | A FlatCompose file; a FlatImage runtime file to build from, unless the output already exists |
 | **Actor** | A user describing one FlatImage application as a file |
 
-A FlatCompose file describes one FlatImage in one YAML file. It states the image it starts from and publishes, the build steps that mutate it, and the reserved-space configuration it declares. FlatCompose reads that file and turns each key into exactly one `fim-*` command, run against a copy of the file `from` names, and publishes the result. The `image` key gives both ends of the build; [Configure](configure.md) states the `config` block, and [Steps](steps.md) states the `steps` block.
+A FlatCompose file describes one FlatImage in one YAML file. It states the image it starts from and publishes, the build steps that mutate it, and the reserved-space configuration it declares. FlatCompose reads that file and turns each key into one `fim-*` command, run against a copy of the file `from` names, and publishes the result. The `image` key gives both ends of the build; [Configure](configure.md) states the `config` block, and [Steps](steps.md) states the `steps` block.
 
-FlatCompose accepts only the keys the schema declares. An unknown key ends the read, and the refusal gives the key it met.
+FlatCompose accepts the keys the schema declares. An unknown key ends the read, and the refusal gives the key it met.
 
 Once the read succeeds, every violation the file holds comes out in one pass. A relative path resolves against the file's own directory.
 
@@ -22,7 +22,7 @@ Once the read succeeds, every violation the file holds comes out in one pass. A 
 
 ### User Story 1: building an application
 
-As a user, I want to build a FlatImage with a descriptive FlatCompose file, so that I can easily and pragmatically compose FlatImages.
+As a user, I want to build a FlatImage with a descriptive FlatCompose file, so that I can compose FlatImages from a description.
 
 **Acceptance scenarios**:
 
@@ -36,7 +36,7 @@ As a user, I want to build a FlatImage with a descriptive FlatCompose file, so t
 
 ### Image
 
-A FlatCompose file builds exactly one FlatImage, and the `image` key gives both ends of that build: the file it starts from and the file it publishes. A build takes its input from that file alone and writes that artifact alone.
+A FlatCompose file builds one FlatImage, and the `image` key gives both ends of that build: the file it starts from and the file it publishes. A build takes its input from that file alone and writes that artifact alone.
 
 ```yaml
 image:

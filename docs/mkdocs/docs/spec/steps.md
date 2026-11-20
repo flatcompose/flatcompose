@@ -682,7 +682,7 @@ steps:
 fim-layer mount clear
 ```
 
-**FR-LAYER-013**: a step's `layer` key MUST state exactly one `fim-layer` command. FlatCompose MUST refuse a key that states no command or more than one.
+**FR-LAYER-013**: a step's `layer` key MUST state one `fim-layer` command. FlatCompose MUST refuse a key that states no command or more than one.
 {: #fr-layer-013 }
 
 ```yaml

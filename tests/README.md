@@ -87,7 +87,7 @@ An integration test stands under `tests/` and runs the binary `cargo` builds for
 | Rule | The claim one case checks | The case |
 |---|---|---|
 | `FR-STEPS-001` | A step stating `system` instead of `builder` exits non-zero naming `builder`, and doesn't leave a digest file. | `steps/steps.rs::a_step_stating_a_command_other_than_builder_is_refused` |
-| `FR-STEPS-002` | A file whose steps block states one builder step builds silently, and `fim-root system list` names the root the source names. | `steps/steps.rs::a_builder_step_builds_the_root_it_names` |
+| `FR-STEPS-002` | A file whose steps block states one builder step builds without output, and `fim-root system list` names the root the source names. | `steps/steps.rs::a_builder_step_builds_the_root_it_names` |
 | `FR-STEPS-002` | A step whose source the install cannot use runs a `fim-root` command, and the build ends when that command fails. | `steps/steps.rs::a_builder_step_runs_a_command_against_the_flatimage` |
 | `FR-BUILDER-002` | A step that omits `from` exits non-zero naming the field, and doesn't leave a digest file. | `steps/builder.rs::a_step_that_names_no_source_is_refused` |
 | `FR-BUILDER-003` | A step that omits the install request exits non-zero naming the field, and doesn't leave a digest file. | `steps/builder.rs::a_step_that_names_no_install_request_is_refused` |
